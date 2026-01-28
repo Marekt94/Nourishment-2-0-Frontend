@@ -9,20 +9,73 @@ import { api } from "./api";
 export const authService = {
   /**
    * Login user
-   * Backend: POST /login
-   * Check swagger.yaml for exact request/response format
+   * Backend: POST /login (without /api prefix)
+   * Request: { login: string, password: string }
+   * Response: { token: string, user?: object }
    */
-  async login(email, password) {
+  async login(username, password) {
+    console.log("🔍 authService.login called with:", { username, password: password ? "***" : undefined });
+
     try {
-      const response = await api.post("/login", { email, password });
-      const { token, user } = response.data;
+      // Try main login endpoint first with username format
+      const requestBody = { login: username, password };
+      console.log("📤 Sending request to /login:", { ...requestBody, password: "***" });
 
-      // Store token in localStorage
-      localStorage.setItem("authToken", token);
+      const response = await api.post("/login", requestBody);
 
-      return { token, user };
+      // Handle different response formats
+      const data = response.data;
+
+      // Format 1: { token, user }
+      if (data.token) {
+        localStorage.setItem("authToken", data.token);
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+        return { token: data.token, user: data.user };
+      }
+
+      // Format 2: { access_token, user }
+      if (data.access_token) {
+        localStorage.setItem("authToken", data.access_token);
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+        return { token: data.access_token, user: data.user };
+      }
+
+      // Format 3: Direct token string
+      if (typeof data === "string") {
+        localStorage.setItem("authToken", data);
+        return { token: data, user: null };
+      }
+
+      throw new Error("Invalid response format from server");
     } catch (error) {
       console.error("Login failed:", error);
+
+      // Try alternative endpoint if first fails (unlikely for this backend)
+      if (error.response?.status === 404) {
+        try {
+          const altResponse = await api.post("/auth/login", {
+            username,
+            password,
+          });
+
+          const data = altResponse.data;
+          if (data.token || data.access_token) {
+            const token = data.token || data.access_token;
+            localStorage.setItem("authToken", token);
+            if (data.user) {
+              localStorage.setItem("user", JSON.stringify(data.user));
+            }
+            return { token, user: data.user };
+          }
+        } catch (altError) {
+          console.error("Alternative login endpoint also failed:", altError);
+        }
+      }
+
       throw error;
     }
   },
@@ -32,7 +85,8 @@ export const authService = {
    */
   logout() {
     localStorage.removeItem("authToken");
-    window.location.href = "/login";
+    localStorage.removeItem("user");
+    window.location.href = "/";
   },
 
   /**
@@ -47,5 +101,13 @@ export const authService = {
    */
   getToken() {
     return localStorage.getItem("authToken");
+  },
+
+  /**
+   * Get stored user
+   */
+  getUser() {
+    const userStr = localStorage.getItem("user");
+    return userStr ? JSON.parse(userStr) : null;
   },
 };

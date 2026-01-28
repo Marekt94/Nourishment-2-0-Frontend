@@ -6,7 +6,7 @@ import "./LandingPage.css";
 export const LandingPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -26,8 +26,14 @@ export const LandingPage = () => {
     setIsLoading(true);
     setError(null);
 
+    console.log('🔍 LandingPage handleSubmit - formData:', formData);
+    console.log('📤 Calling authService.login with:', { 
+      username: formData.username, 
+      password: formData.password ? '***' : undefined 
+    });
+
     try {
-      await authService.login(formData.email, formData.password);
+      await authService.login(formData.username, formData.password);
       alert("Zalogowano pomyślnie!");
       navigate("/dashboard");
     } catch (err) {
@@ -78,17 +84,17 @@ export const LandingPage = () => {
               )}
 
               <div className="landing-page__form-group">
-                <label htmlFor="email" className="landing-page__form-label">
-                  Email
+                <label htmlFor="username" className="landing-page__form-label">
+                  Nazwa użytkownika
                 </label>
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
                   className="landing-page__form-input"
-                  placeholder="twoj@email.com"
+                  placeholder="ADMIN"
                   required
                   disabled={isLoading}
                 />
