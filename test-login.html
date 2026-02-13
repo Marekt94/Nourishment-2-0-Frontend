@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #45a049;
+      }
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        display: none;
+      }
+      .success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+      .info {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧪 Test Logowania</h1>
+
+      <div class="info">
+        <strong>Backend:</strong> http://localhost:8080/api/login<br />
+        <strong>Frontend:</strong> http://localhost:3001<br />
+        <strong>Dane testowe:</strong> ADMIN / admin
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Nazwa użytkownika:</label>
+          <input type="text" id="username" name="username" value="ADMIN" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Hasło:</label>
+          <input type="password" id="password" name="password" value="admin" required />
+        </div>
+
+        <button type="submit">Zaloguj się</button>
+      </form>
+
+      <div id="result" class="result"></div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:8080/api";
+
+      document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const resultDiv = document.getElementById("result");
+
+        resultDiv.style.display = "none";
+        resultDiv.className = "result";
+
+        try {
+          console.log("Sending request to:", `${API_URL}/login`);
+          console.log("Data:", { username, password });
+
+          const response = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
+
+          console.log("Response status:", response.status);
+          console.log("Response headers:", response.headers);
+
+          const data = await response.json();
+          console.log("Response data:", data);
+
+          if (response.ok) {
+            resultDiv.className = "result success";
+            resultDiv.innerHTML = `
+                        <h3>✓ Sukces!</h3>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Token:</strong> ${data.token ? data.token.substring(0, 50) + "..." : "N/A"}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+
+            // Save to localStorage
+            if (data.token) {
+              localStorage.setItem("authToken", data.token);
+              if (data.user) {
+                localStorage.setItem("user", JSON.stringify(data.user));
+              }
+            }
+          } else {
+            throw new Error(data.message || `HTTP ${response.status}`);
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          resultDiv.className = "result error";
+          resultDiv.innerHTML = `
+                    <h3>✗ Błąd</h3>
+                    <p><strong>Komunikat:</strong> ${error.message}</p>
+                    <pre>${error.stack || ""}</pre>
+                `;
+        }
+
+        resultDiv.style.display = "block";
+      });
+
+      // Check localStorage on load
+      window.addEventListener("load", () => {
+        const token = localStorage.getItem("authToken");
+        const user = localStorage.getItem("user");
+
+        if (token) {
+          console.log("Found stored token:", token.substring(0, 30) + "...");
+        }
+        if (user) {
+          console.log("Found stored user:", user);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,3 +1,5 @@
 Tworzenie komunikacji z backendem:
 - po kazdym tescie musi sprawdzic logi backendu i sprawdzic, czy są 200
 - powinien uruchamiac backend i forntend sam
+
+- przy sprawdzaniu jaki powinien byc request zapomina o danych z instrukcji (ze ma sprawdzac w swaggerze)

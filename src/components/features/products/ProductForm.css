@@ -1,0 +1,125 @@
+.product-form {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.product-form__title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+}
+
+.product-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.product-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.product-form__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.product-form__input,
+.product-form__textarea {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #1f2937;
+  transition: border-color 0.2s;
+}
+
+.product-form__input:focus,
+.product-form__textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.product-form__input:disabled,
+.product-form__textarea:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.product-form__textarea {
+  resize: vertical;
+  font-family: inherit;
+  min-height: 80px;
+}
+
+.product-form__actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.product-form__button {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.product-form__button--cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.product-form__button--cancel:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.product-form__button--submit {
+  background: #3b82f6;
+  color: white;
+}
+
+.product-form__button--submit:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.product-form__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.product-form__hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-form {
+    padding: 1.5rem;
+  }
+
+  .product-form__row {
+    grid-template-columns: 1fr;
+  }
+}
