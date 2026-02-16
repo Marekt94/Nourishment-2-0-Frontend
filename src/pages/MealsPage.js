@@ -14,10 +14,10 @@ export const MealsPage = () => {
   const { meals, isLoading, error, createMeal, updateMeal, deleteMeal } = useMeals();
   const [showForm, setShowForm] = useState(false);
   const [editingMeal, setEditingMeal] = useState(null);
-  
+
   // Search and filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name'); // name, calories, proteins
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name"); // name, calories, proteins
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -66,13 +66,13 @@ export const MealsPage = () => {
 
   // Filter and sort meals
   const filteredMeals = meals
-    .filter(meal => {
+    .filter((meal) => {
       // Search by name
       return meal.name?.toLowerCase().includes(searchTerm.toLowerCase());
     })
     .sort((a, b) => {
-      if (sortBy === 'name') {
-        return (a.name || '').localeCompare(b.name || '');
+      if (sortBy === "name") {
+        return (a.name || "").localeCompare(b.name || "");
       }
       // For calories/proteins sorting, we'd need to calculate totals
       // For now, just sort by name
@@ -86,11 +86,14 @@ export const MealsPage = () => {
         <div className="meals-page__header-content">
           <h1 className="meals-page__title">🍽️ Posiłki</h1>
           <div className="meals-page__header-actions">
-            <button
-              className="meals-page__button meals-page__button--products"
-              onClick={() => navigate('/products')}
-            >
+            <button className="meals-page__button meals-page__button--products" onClick={() => navigate("/products")}>
               📦 Produkty
+            </button>
+            <button
+              className="meals-page__button meals-page__button--mealsinday"
+              onClick={() => navigate("/mealsinday")}
+            >
+              📅 Plany Dnia
             </button>
             <button
               className="meals-page__button meals-page__button--create"
@@ -114,10 +117,7 @@ export const MealsPage = () => {
               <div className="meals-page__form-placeholder">
                 <h3>Formularz posiłku (wkrótce)</h3>
                 <p>Tutaj będzie formularz do tworzenia/edycji posiłku</p>
-                <button 
-                  className="meals-page__button meals-page__button--cancel"
-                  onClick={handleFormCancel}
-                >
+                <button className="meals-page__button meals-page__button--cancel" onClick={handleFormCancel}>
                   Anuluj
                 </button>
               </div>
@@ -135,9 +135,9 @@ export const MealsPage = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                   {searchTerm && (
-                    <button 
+                    <button
                       className="meals-page__clear-search"
-                      onClick={() => setSearchTerm('')}
+                      onClick={() => setSearchTerm("")}
                       title="Wyczyść wyszukiwanie"
                     >
                       ✕
@@ -145,11 +145,7 @@ export const MealsPage = () => {
                   )}
                 </div>
 
-                <select
-                  className="meals-page__sort"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
+                <select className="meals-page__sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                   <option value="name">Sortuj po nazwie</option>
                   <option value="calories">Sortuj po kaloriach</option>
                   <option value="proteins">Sortuj po białku</option>

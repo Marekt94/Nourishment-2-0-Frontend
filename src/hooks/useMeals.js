@@ -21,7 +21,7 @@ export const useMeals = () => {
       const data = await mealService.getMeals();
       console.log("🍽️ useMeals - Raw data from backend:", data);
       console.log("🍽️ useMeals - Total meals:", data?.length);
-      
+
       setMeals(data || []);
     } catch (err) {
       setError(err.message || "Failed to fetch meals");

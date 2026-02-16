@@ -3,8 +3,8 @@
  * Displays a single meal in a compact list with expandable details
  */
 
-import React, { useState } from 'react';
-import './MealCard.css';
+import React, { useState } from "react";
+import "./MealCard.css";
 
 export const MealCard = ({ meal, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -24,30 +24,33 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
       return { calories: 0, proteins: 0, carbs: 0, fat: 0 };
     }
 
-    return meal.productsInMeal.reduce((totals, item) => {
-      const product = item.product || {};
-      const weight = item.weight || 100; // Default to 100g if not specified
-      const factor = weight / 100; // Calculate factor based on weight
+    return meal.productsInMeal.reduce(
+      (totals, item) => {
+        const product = item.product || {};
+        const weight = item.weight || 100; // Default to 100g if not specified
+        const factor = weight / 100; // Calculate factor based on weight
 
-      return {
-        calories: totals.calories + (product.kcalPer100 || 0) * factor,
-        proteins: totals.proteins + (product.proteins || 0) * factor,
-        carbs: totals.carbs + (product.carbohydrates || 0) * factor,
-        fat: totals.fat + (product.fat || 0) * factor,
-      };
-    }, { calories: 0, proteins: 0, carbs: 0, fat: 0 });
+        return {
+          calories: totals.calories + (product.kcalPer100 || 0) * factor,
+          proteins: totals.proteins + (product.proteins || 0) * factor,
+          carbs: totals.carbs + (product.carbohydrates || 0) * factor,
+          fat: totals.fat + (product.fat || 0) * factor,
+        };
+      },
+      { calories: 0, proteins: 0, carbs: 0, fat: 0 },
+    );
   };
 
   const macros = getTotalMacros();
 
   return (
-    <div className={`meal-card ${isExpanded ? 'meal-card--expanded' : ''}`}>
+    <div className={`meal-card ${isExpanded ? "meal-card--expanded" : ""}`}>
       {/* Compact View - Always Visible */}
       <div className="meal-card__compact" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="meal-card__compact-left">
-          <h3 className="meal-card__name">{meal.name || 'Unnamed Meal'}</h3>
+          <h3 className="meal-card__name">{meal.name || "Unnamed Meal"}</h3>
           <span className="meal-card__products-count">
-            🍴 {productsCount} {productsCount === 1 ? 'produkt' : 'produktów'}
+            🍴 {productsCount} {productsCount === 1 ? "produkt" : "produktów"}
           </span>
         </div>
 
@@ -68,8 +71,8 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
             <span className="meal-card__macro-label">Tłuszcze</span>
             <span className="meal-card__macro-value">{Math.round(macros.fat)}g</span>
           </div>
-          
-          <button 
+
+          <button
             className="meal-card__expand-btn"
             onClick={(e) => {
               e.stopPropagation();
@@ -77,7 +80,7 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
             }}
             title={isExpanded ? "Zwiń" : "Rozwiń"}
           >
-            {isExpanded ? '▲' : '▼'}
+            {isExpanded ? "▲" : "▼"}
           </button>
         </div>
       </div>
@@ -92,17 +95,13 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
               <div className="meal-card__products-list">
                 {meal.productsInMeal.map((item, index) => (
                   <div key={index} className="meal-card__product-item">
-                    <span className="meal-card__product-name">
-                      {item.product?.name || 'Unknown Product'}
-                    </span>
-                    <span className="meal-card__product-weight">
-                      {item.weight || 100}g
-                    </span>
+                    <span className="meal-card__product-name">{item.product?.name || "Unknown Product"}</span>
+                    <span className="meal-card__product-weight">{item.weight || 100}g</span>
                     <div className="meal-card__product-macros">
-                      <span>🔥 {Math.round((item.product?.kcalPer100 || 0) * (item.weight || 100) / 100)} kcal</span>
-                      <span>💪 {Math.round((item.product?.proteins || 0) * (item.weight || 100) / 100)}g</span>
-                      <span>🍞 {Math.round((item.product?.carbohydrates || 0) * (item.weight || 100) / 100)}g</span>
-                      <span>🥑 {Math.round((item.product?.fat || 0) * (item.weight || 100) / 100)}g</span>
+                      <span>🔥 {Math.round(((item.product?.kcalPer100 || 0) * (item.weight || 100)) / 100)} kcal</span>
+                      <span>💪 {Math.round(((item.product?.proteins || 0) * (item.weight || 100)) / 100)}g</span>
+                      <span>🍞 {Math.round(((item.product?.carbohydrates || 0) * (item.weight || 100)) / 100)}g</span>
+                      <span>🥑 {Math.round(((item.product?.fat || 0) * (item.weight || 100)) / 100)}g</span>
                     </div>
                   </div>
                 ))}

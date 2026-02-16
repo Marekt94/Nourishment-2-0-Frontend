@@ -1,0 +1,379 @@
+.meal-in-day-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.meal-in-day-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Compact View */
+.meal-in-day-card__compact {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.meal-in-day-card__header {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.meal-in-day-card__name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.meal-in-day-card__badge {
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.meal-in-day-card__badge--5days {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.meal-in-day-card__macros {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.meal-in-day-card__macro {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+.meal-in-day-card__macro strong {
+  font-size: 1.1rem;
+}
+
+.meal-in-day-card__expand-btn {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.meal-in-day-card__expand-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* Expanded Details */
+.meal-in-day-card__details {
+  padding: 0 20px 20px;
+  border-top: 1px solid #e5e7eb;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.meal-in-day-card__meals {
+  margin-top: 20px;
+}
+
+.meal-in-day-card__meals h4 {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.meal-in-day-card__meal-slot {
+  padding: 12px;
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.meal-in-day-card__meal-slot--empty {
+  background: #f9fafb;
+  border-left-color: #d1d5db;
+  opacity: 0.6;
+}
+
+.meal-in-day-card__meal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.meal-in-day-card__meal-header:hover {
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 4px;
+  padding: 4px;
+  margin: -4px -4px 4px -4px;
+}
+
+.meal-in-day-card__meal-expand-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #f59e0b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.meal-in-day-card__meal-expand-btn:hover {
+  background: #f59e0b;
+  color: white;
+}
+
+.meal-in-day-card__meal-label {
+  font-weight: 600;
+  color: #92400e;
+  font-size: 0.9rem;
+}
+
+.meal-in-day-card__meal-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.meal-in-day-card__meal-factor {
+  padding: 2px 8px;
+  background: #f59e0b;
+  color: white;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.meal-in-day-card__meal-empty {
+  font-style: italic;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.meal-in-day-card__meal-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.meal-in-day-card__meal-products {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.meal-in-day-card__meal-macros {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+/* Meal Products List */
+.meal-in-day-card__meal-products-list {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #fbbf24;
+  animation: slideDown 0.2s ease;
+}
+
+.meal-in-day-card__meal-products-list h5 {
+  margin: 0 0 8px 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.meal-in-day-card__product-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: white;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.meal-in-day-card__product-item:last-child {
+  margin-bottom: 0;
+}
+
+.meal-in-day-card__product-name {
+  flex: 1;
+  min-width: 120px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.meal-in-day-card__product-weight {
+  font-weight: 600;
+  color: #f59e0b;
+  min-width: 50px;
+  text-align: right;
+}
+
+.meal-in-day-card__product-macros {
+  display: flex;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.meal-in-day-card__product-macros span {
+  white-space: nowrap;
+}
+
+/* Summary Section */
+.meal-in-day-card__summary {
+  margin-top: 24px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 8px;
+}
+
+.meal-in-day-card__summary h4 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.meal-in-day-card__summary-macros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.meal-in-day-card__summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meal-in-day-card__summary-label {
+  font-size: 0.85rem;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.meal-in-day-card__summary-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* Action Buttons */
+.meal-in-day-card__actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.meal-in-day-card__btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.meal-in-day-card__btn--edit {
+  background: #f59e0b;
+  color: white;
+}
+
+.meal-in-day-card__btn--edit:hover {
+  background: #d97706;
+}
+
+.meal-in-day-card__btn--delete {
+  background: #ef4444;
+  color: white;
+}
+
+.meal-in-day-card__btn--delete:hover {
+  background: #dc2626;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .meal-in-day-card__compact {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .meal-in-day-card__macros {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .meal-in-day-card__expand-btn {
+    align-self: center;
+  }
+
+  .meal-in-day-card__meal-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .meal-in-day-card__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .meal-in-day-card__btn {
+    width: 100%;
+  }
+}

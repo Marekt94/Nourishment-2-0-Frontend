@@ -5,6 +5,7 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ProductsPage } from "./pages/ProductsPage";
 import { MealsPage } from "./pages/MealsPage";
+import MealsInDayPage from "./pages/MealsInDayPage";
 import { authService } from "./services/authService";
 import "./App.css";
 
@@ -41,6 +42,14 @@ export const App = () => {
           element={
             <ProtectedRoute>
               <MealsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mealsinday"
+          element={
+            <ProtectedRoute>
+              <MealsInDayPage />
             </ProtectedRoute>
           }
         />

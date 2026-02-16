@@ -3,9 +3,9 @@
  * Displays a list of meals
  */
 
-import React from 'react';
-import { MealCard } from './MealCard';
-import './MealList.css';
+import React from "react";
+import { MealCard } from "./MealCard";
+import "./MealList.css";
 
 export const MealList = ({ meals, isLoading, error, onEdit, onDelete }) => {
   if (isLoading) {
@@ -33,17 +33,12 @@ export const MealList = ({ meals, isLoading, error, onEdit, onDelete }) => {
     );
   }
 
-  console.log('📦 MealList rendering', meals.length, 'meals');
+  console.log("📦 MealList rendering", meals.length, "meals");
 
   return (
     <div className="meal-list">
       {meals.map((meal) => (
-        <MealCard
-          key={meal.id}
-          meal={meal}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
+        <MealCard key={meal.id} meal={meal} onEdit={onEdit} onDelete={onDelete} />
       ))}
     </div>
   );

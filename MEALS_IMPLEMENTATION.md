@@ -15,6 +15,7 @@ Created new page for managing meals (posiłki). Similar structure to Products pa
 ## 🔧 Implementation
 
 ### 1. **Meal Service** (`src/services/mealService.js`)
+
 API communication layer for meals:
 
 ```javascript
@@ -26,6 +27,7 @@ API communication layer for meals:
 ```
 
 **Swagger Definition:**
+
 ```yaml
 meal.Meal:
   properties:
@@ -36,21 +38,23 @@ meal.Meal:
 ```
 
 ### 2. **useMeals Hook** (`src/hooks/useMeals.js`)
+
 State management for meals:
 
 ```javascript
-const { 
-  meals,           // Array of meals
-  isLoading,       // Loading state
-  error,           // Error message
-  createMeal,      // Create function
-  updateMeal,      // Update function
-  deleteMeal,      // Delete function
-  refetch          // Refresh data
+const {
+  meals, // Array of meals
+  isLoading, // Loading state
+  error, // Error message
+  createMeal, // Create function
+  updateMeal, // Update function
+  deleteMeal, // Delete function
+  refetch, // Refresh data
 } = useMeals();
 ```
 
 **Features:**
+
 - Auto-fetch on mount
 - Handle POST response (only ID returned, merge with data)
 - Handle PUT response (no body, use sent data)
@@ -58,9 +62,11 @@ const {
 - Loading states
 
 ### 3. **MealCard Component** (`src/components/features/meals/MealCard.js`)
+
 Expandable meal card with product list:
 
 **Compact View:**
+
 - Meal name
 - Products count badge (🍴 X produktów)
 - Total macros calculated from all products:
@@ -71,6 +77,7 @@ Expandable meal card with product list:
 - Expand/collapse button
 
 **Expanded View:**
+
 - **Produkty w posiłku** - List of products with:
   - Product name
   - Weight
@@ -80,23 +87,28 @@ Expandable meal card with product list:
 - **Edit/Delete buttons**
 
 **Macro Calculation:**
+
 ```javascript
 const getTotalMacros = () => {
-  return meal.productsInMeal.reduce((totals, item) => {
-    const weight = item.weight || 100;
-    const factor = weight / 100;
-    
-    return {
-      calories: totals.calories + (product.kcalPer100 || 0) * factor,
-      proteins: totals.proteins + (product.proteins || 0) * factor,
-      carbs: totals.carbs + (product.carbohydrates || 0) * factor,
-      fat: totals.fat + (product.fat || 0) * factor,
-    };
-  }, { calories: 0, proteins: 0, carbs: 0, fat: 0 });
+  return meal.productsInMeal.reduce(
+    (totals, item) => {
+      const weight = item.weight || 100;
+      const factor = weight / 100;
+
+      return {
+        calories: totals.calories + (product.kcalPer100 || 0) * factor,
+        proteins: totals.proteins + (product.proteins || 0) * factor,
+        carbs: totals.carbs + (product.carbohydrates || 0) * factor,
+        fat: totals.fat + (product.fat || 0) * factor,
+      };
+    },
+    { calories: 0, proteins: 0, carbs: 0, fat: 0 },
+  );
 };
 ```
 
 ### 4. **MealList Component** (`src/components/features/meals/MealList.js`)
+
 List container:
 
 - Loading spinner
@@ -105,9 +117,11 @@ List container:
 - Maps meals to MealCard components
 
 ### 5. **MealsPage** (`src/pages/MealsPage.js`)
+
 Main meals management page:
 
 **Header:**
+
 - Title: "🍽️ Posiłki"
 - Navigation buttons:
   - "📦 Produkty" - Go to products page
@@ -115,6 +129,7 @@ Main meals management page:
   - "Wyloguj" - Logout
 
 **Search & Filter:**
+
 - Search bar (by meal name)
 - Sort options:
   - By name
@@ -122,10 +137,12 @@ Main meals management page:
   - By protein (todo - needs calculation)
 
 **Form:**
+
 - Placeholder for now ("Formularz posiłku (wkrótce)")
 - Cancel button to go back to list
 
 ### 6. **Routing** (`src/App.js`)
+
 Added protected route:
 
 ```javascript
@@ -140,6 +157,7 @@ Added protected route:
 ```
 
 ### 7. **Navigation Updates**
+
 - **ProductsPage**: Added "🍽️ Posiłki" button (green)
 - **MealsPage**: Added "📦 Produkty" button (purple)
 - Polish labels throughout
@@ -149,15 +167,17 @@ Added protected route:
 ## 🎨 Visual Design
 
 ### Color Scheme:
+
 - **Background gradient**: Green (#10b981 → #059669)
 - **Products count badge**: Green gradient
 - **Spinner**: Green accent
-- **Buttons**: 
+- **Buttons**:
   - Create: Green
   - Products nav: Purple
   - Logout: Red
 
 ### Layout:
+
 ```
 ┌────────────────────────────────────────────────────────┐
 │ Meal Name  [🍴 3 produkty]  │ Kcal | Białko | Węgle | Tłuszcze │ [▼] │
@@ -186,6 +206,7 @@ Added protected route:
 ## 🔄 Data Flow
 
 ### Loading Meals:
+
 ```
 MealsPage mounts
     ↓
@@ -202,7 +223,7 @@ Returns array of meals
 Each meal contains:
   - id, name, recipe
   - productsInMeal: [
-      { 
+      {
         product: { full product data },
         weight: number
       }
@@ -214,6 +235,7 @@ Each MealCard calculates totals
 ```
 
 ### Macro Calculation Example:
+
 ```javascript
 Meal: "Chicken Salad"
 Products:
@@ -222,13 +244,13 @@ Products:
      - proteins: 31
      → 165 * 1.5 = 247.5 kcal
      → 31 * 1.5 = 46.5g protein
-  
+
   2. Lettuce (100g)
      - kcalPer100: 15
      - proteins: 1.4
      → 15 * 1 = 15 kcal
      → 1.4 * 1 = 1.4g protein
-  
+
 Total: 262.5 kcal, 47.9g protein
 ```
 
@@ -239,6 +261,7 @@ Total: 262.5 kcal, 47.9g protein
 Need to implement `MealForm.js` component with:
 
 ### Fields:
+
 1. **Meal Name** (text input, required)
 2. **Recipe** (textarea, optional)
 3. **Products in Meal** (dynamic list):
@@ -248,6 +271,7 @@ Need to implement `MealForm.js` component with:
    - Show calculated macros per product
 
 ### Features:
+
 - Search products while typing
 - Display product preview (macros per 100g)
 - Auto-calculate total macros as products added
@@ -255,31 +279,28 @@ Need to implement `MealForm.js` component with:
 - Validation (at least one product required)
 
 ### Example Form Structure:
+
 ```jsx
 <form>
   <input name="name" placeholder="Nazwa posiłku" />
   <textarea name="recipe" placeholder="Przepis..." />
-  
+
   <div className="products-selector">
     <h3>Produkty w posiłku:</h3>
     {productsInMeal.map((item, index) => (
       <div key={index}>
         <select value={item.productId}>
-          {availableProducts.map(p => (
+          {availableProducts.map((p) => (
             <option value={p.id}>{p.name}</option>
           ))}
         </select>
-        <input 
-          type="number" 
-          value={item.weight} 
-          placeholder="Waga (g)"
-        />
+        <input type="number" value={item.weight} placeholder="Waga (g)" />
         <button onClick={() => removeProduct(index)}>✕</button>
       </div>
     ))}
     <button onClick={addProduct}>+ Dodaj produkt</button>
   </div>
-  
+
   <div className="total-preview">
     <h4>Suma makroskładników:</h4>
     <span>🔥 {totalCalories} kcal</span>
@@ -287,9 +308,11 @@ Need to implement `MealForm.js` component with:
     <span>🍞 {totalCarbs}g</span>
     <span>🥑 {totalFat}g</span>
   </div>
-  
+
   <button type="submit">Zapisz</button>
-  <button type="button" onClick={onCancel}>Anuluj</button>
+  <button type="button" onClick={onCancel}>
+    Anuluj
+  </button>
 </form>
 ```
 
@@ -317,6 +340,7 @@ Need to implement `MealForm.js` component with:
 ## 🧪 Testing Checklist
 
 ### Basic Functionality:
+
 - [ ] Navigate to /meals from products page
 - [ ] Meals load from backend (GET /meals)
 - [ ] Loading spinner displays while fetching
@@ -324,6 +348,7 @@ Need to implement `MealForm.js` component with:
 - [ ] Error state if fetch fails
 
 ### Meal Display:
+
 - [ ] Meal name displayed correctly
 - [ ] Products count badge shows correct number
 - [ ] Total macros calculated correctly
@@ -334,17 +359,20 @@ Need to implement `MealForm.js` component with:
 - [ ] Summary macros match calculated totals
 
 ### Search & Filter:
+
 - [ ] Search filters by meal name
 - [ ] Clear button works
 - [ ] Sort by name works
 - [ ] Empty search results handled
 
 ### Navigation:
+
 - [ ] Products button goes to /products
 - [ ] Logout button clears token and redirects
 - [ ] Protected route requires authentication
 
 ### Responsive:
+
 - [ ] Mobile: Layout adapts
 - [ ] Mobile: Buttons stack vertically
 - [ ] Mobile: Macros display in grid
@@ -381,6 +409,7 @@ Need to implement `MealForm.js` component with:
 **Status:** ✅ Meals page structure complete, form pending
 
 **What Works:**
+
 - ✅ Navigation between Products and Meals
 - ✅ Meals list with expandable cards
 - ✅ Total macros calculation from products
@@ -389,6 +418,7 @@ Need to implement `MealForm.js` component with:
 - ✅ Protected routing
 
 **What's Missing:**
+
 - ⏳ MealForm component (create/edit)
 - ⏳ Product selector in form
 - ⏳ Form validation

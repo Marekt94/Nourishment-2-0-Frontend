@@ -114,10 +114,7 @@ export const ProductsPage = () => {
         <div className="products-page__header-content">
           <h1 className="products-page__title">📦 Produkty</h1>
           <div className="products-page__header-actions">
-            <button
-              className="products-page__button products-page__button--meals"
-              onClick={() => navigate('/meals')}
-            >
+            <button className="products-page__button products-page__button--meals" onClick={() => navigate("/meals")}>
               🍽️ Posiłki
             </button>
             <button
