@@ -1,0 +1,348 @@
+.meal-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.meal-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.meal-card--expanded {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Compact View (Always Visible) */
+.meal-card__compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  gap: 1rem;
+  transition: background 0.2s;
+}
+
+.meal-card__compact:hover {
+  background: #f9fafb;
+}
+
+.meal-card__compact-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.meal-card__name {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meal-card__products-count {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.meal-card__compact-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+.meal-card__macro-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 70px;
+}
+
+.meal-card__macro-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.meal-card__macro-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.meal-card__expand-btn {
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #6b7280;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.meal-card__expand-btn:hover {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+/* Expanded Details */
+.meal-card__details-expanded {
+  border-top: 2px solid #f3f4f6;
+  padding: 1.5rem;
+  background: #fafbfc;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+  }
+}
+
+.meal-card__details-section {
+  margin-bottom: 1.5rem;
+}
+
+.meal-card__details-section:last-of-type {
+  margin-bottom: 1rem;
+}
+
+.meal-card__details-title {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Products List */
+.meal-card__products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.meal-card__product-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.meal-card__product-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.meal-card__product-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.meal-card__product-weight {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.meal-card__product-macros {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.meal-card__product-macros span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Recipe */
+.meal-card__recipe {
+  margin: 0;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Summary Grid */
+.meal-card__details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.meal-card__detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.meal-card__detail-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.meal-card__detail-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.meal-card__detail-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  flex: 1;
+}
+
+.meal-card__detail-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  flex-shrink: 0;
+}
+
+/* Actions */
+.meal-card__actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.meal-card__button {
+  flex: 1;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.meal-card__button--edit {
+  background: #3b82f6;
+  color: white;
+}
+
+.meal-card__button--edit:hover {
+  background: #2563eb;
+}
+
+.meal-card__button--delete {
+  background: #ef4444;
+  color: white;
+}
+
+.meal-card__button--delete:hover {
+  background: #dc2626;
+}
+
+.meal-card__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .meal-card__compact {
+    padding: 1rem;
+  }
+
+  .meal-card__compact-right {
+    gap: 1rem;
+  }
+
+  .meal-card__macro-compact {
+    min-width: 60px;
+  }
+
+  .meal-card__details-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .meal-card__compact {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+  }
+
+  .meal-card__compact-left {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .meal-card__compact-right {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .meal-card__macro-compact {
+    min-width: auto;
+  }
+
+  .meal-card__expand-btn {
+    grid-column: span 4;
+  }
+
+  .meal-card__details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .meal-card__name {
+    font-size: 1rem;
+    white-space: normal;
+  }
+}

@@ -40,11 +40,6 @@ export const useProducts = () => {
         console.log("  - fiber:", firstProduct.fiber, typeof firstProduct.fiber);
         console.log("  - salt:", firstProduct.salt, typeof firstProduct.salt);
         console.log("  - Complete object:", JSON.stringify(firstProduct, null, 2));
-
-        // Alert for debugging
-        alert(
-          `🔍 Backend Data Check:\n\ncarbohydrates: ${firstProduct.carbohydrates}\nsugarAndCarb: ${firstProduct.sugarAndCarb}\nsugar: ${firstProduct.sugar}\n\nCheck console for full details!`,
-        );
       }
 
       // Check if data has zero values

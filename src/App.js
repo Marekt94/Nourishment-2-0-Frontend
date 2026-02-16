@@ -4,6 +4,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ProductsPage } from "./pages/ProductsPage";
+import { MealsPage } from "./pages/MealsPage";
 import { authService } from "./services/authService";
 import "./App.css";
 
@@ -32,6 +33,14 @@ export const App = () => {
           element={
             <ProtectedRoute>
               <ProductsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/meals"
+          element={
+            <ProtectedRoute>
+              <MealsPage />
             </ProtectedRoute>
           }
         />

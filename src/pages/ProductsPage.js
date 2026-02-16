@@ -112,17 +112,23 @@ export const ProductsPage = () => {
       {/* Header */}
       <header className="products-page__header">
         <div className="products-page__header-content">
-          <h1 className="products-page__title">Products</h1>
+          <h1 className="products-page__title">📦 Produkty</h1>
           <div className="products-page__header-actions">
+            <button
+              className="products-page__button products-page__button--meals"
+              onClick={() => navigate('/meals')}
+            >
+              🍽️ Posiłki
+            </button>
             <button
               className="products-page__button products-page__button--create"
               onClick={handleCreateClick}
               disabled={isLoading}
             >
-              + Create Product
+              + Utwórz Produkt
             </button>
             <button className="products-page__button products-page__button--logout" onClick={handleLogout}>
-              Logout
+              Wyloguj
             </button>
           </div>
         </div>

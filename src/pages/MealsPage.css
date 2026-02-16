@@ -1,9 +1,9 @@
-.products-page {
+.meals-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
-.products-page__header {
+.meals-page__header {
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
@@ -11,7 +11,7 @@
   z-index: 100;
 }
 
-.products-page__header-content {
+.meals-page__header-content {
   max-width: 1400px;
   margin: 0 auto;
   padding: 1.5rem 2rem;
@@ -21,19 +21,19 @@
   gap: 1rem;
 }
 
-.products-page__title {
+.meals-page__title {
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
   color: #1f2937;
 }
 
-.products-page__header-actions {
+.meals-page__header-actions {
   display: flex;
   gap: 1rem;
 }
 
-.products-page__button {
+.meals-page__button {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -43,54 +43,63 @@
   transition: all 0.2s;
 }
 
-.products-page__button--create {
-  background: #3b82f6;
+.meals-page__button--products {
+  background: #8b5cf6;
   color: white;
 }
 
-.products-page__button--create:hover:not(:disabled) {
-  background: #2563eb;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+.meals-page__button--products:hover {
+  background: #7c3aed;
 }
 
-.products-page__button--meals {
+.meals-page__button--create {
   background: #10b981;
   color: white;
 }
 
-.products-page__button--meals:hover {
+.meals-page__button--create:hover:not(:disabled) {
   background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
 }
 
-.products-page__button--logout {
+.meals-page__button--logout {
   background: #ef4444;
   color: white;
 }
 
-.products-page__button--logout:hover {
+.meals-page__button--logout:hover {
   background: #dc2626;
 }
 
-.products-page__button:disabled {
+.meals-page__button--cancel {
+  background: #6b7280;
+  color: white;
+}
+
+.meals-page__button--cancel:hover {
+  background: #4b5563;
+}
+
+.meals-page__button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.products-page__main {
+.meals-page__main {
   padding: 2rem;
 }
 
-.products-page__container {
+.meals-page__container {
   max-width: 1400px;
   margin: 0 auto;
 }
 
-.products-page__form-wrapper {
-  animation: products-page-fade-in 0.3s ease-in;
+.meals-page__form-wrapper {
+  animation: meals-page-fade-in 0.3s ease-in;
 }
 
-@keyframes products-page-fade-in {
+@keyframes meals-page-fade-in {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -101,45 +110,27 @@
   }
 }
 
-.products-page__stats {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.products-page__stat-card {
+.meals-page__form-placeholder {
   background: white;
-  padding: 1.5rem;
   border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 200px;
 }
 
-.products-page__stat-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.products-page__stat-value {
-  font-size: 2rem;
-  font-weight: 700;
+.meals-page__form-placeholder h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
   color: #1f2937;
 }
 
-.products-page__stat-total {
-  font-size: 1.25rem;
-  color: #9ca3af;
-  font-weight: 400;
+.meals-page__form-placeholder p {
+  margin: 0 0 2rem 0;
+  color: #6b7280;
 }
 
 /* Search and Filter Controls */
-.products-page__controls {
+.meals-page__controls {
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
@@ -151,13 +142,13 @@
   align-items: center;
 }
 
-.products-page__search-wrapper {
+.meals-page__search-wrapper {
   flex: 1;
   min-width: 250px;
   position: relative;
 }
 
-.products-page__search {
+.meals-page__search {
   width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: 2px solid #e5e7eb;
@@ -166,12 +157,12 @@
   transition: border-color 0.2s;
 }
 
-.products-page__search:focus {
+.meals-page__search:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #10b981;
 }
 
-.products-page__clear-search {
+.meals-page__clear-search {
   position: absolute;
   right: 0.5rem;
   top: 50%;
@@ -190,13 +181,12 @@
   transition: all 0.2s;
 }
 
-.products-page__clear-search:hover {
+.meals-page__clear-search:hover {
   background: #d1d5db;
   color: #374151;
 }
 
-.products-page__filter,
-.products-page__sort {
+.meals-page__sort {
   padding: 0.75rem 1rem;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
@@ -207,66 +197,56 @@
   min-width: 180px;
 }
 
-.products-page__filter:focus,
-.products-page__sort:focus {
+.meals-page__sort:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #10b981;
 }
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .products-page__header-content {
+  .meals-page__header-content {
     padding: 1rem 1.5rem;
   }
 
-  .products-page__main {
+  .meals-page__main {
     padding: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  .products-page__header-content {
+  .meals-page__header-content {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
   }
 
-  .products-page__title {
+  .meals-page__title {
     font-size: 1.5rem;
     text-align: center;
   }
 
-  .products-page__header-actions {
+  .meals-page__header-actions {
     flex-direction: column;
   }
 
-  .products-page__button {
+  .meals-page__button {
     width: 100%;
   }
 
-  .products-page__main {
+  .meals-page__main {
     padding: 1rem;
   }
 
-  .products-page__stats {
-    flex-direction: column;
-  }
-
-  .products-page__stat-card {
-    min-width: auto;
-  }
-
-  .products-page__controls {
+  .meals-page__controls {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .products-page__search-wrapper {
+  .meals-page__search-wrapper {
     min-width: auto;
   }
 
-  .products-page__filter,
-  .products-page__sort {
+  .meals-page__sort {
     min-width: auto;
     width: 100%;
   }
