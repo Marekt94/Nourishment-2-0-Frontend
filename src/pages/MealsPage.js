@@ -4,13 +4,11 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMeals } from "../hooks/useMeals";
 import { MealList } from "../components/features/meals/MealList";
 import "./MealsPage.css";
 
 export const MealsPage = () => {
-  const navigate = useNavigate();
   const { meals, isLoading, error, createMeal, updateMeal, deleteMeal } = useMeals();
   const [showForm, setShowForm] = useState(false);
   const [editingMeal, setEditingMeal] = useState(null);
@@ -18,11 +16,6 @@ export const MealsPage = () => {
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name"); // name, calories, proteins
-
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/");
-  };
 
   const handleCreateClick = () => {
     setEditingMeal(null);
@@ -86,24 +79,12 @@ export const MealsPage = () => {
         <div className="meals-page__header-content">
           <h1 className="meals-page__title">🍽️ Posiłki</h1>
           <div className="meals-page__header-actions">
-            <button className="meals-page__button meals-page__button--products" onClick={() => navigate("/products")}>
-              📦 Produkty
-            </button>
-            <button
-              className="meals-page__button meals-page__button--mealsinday"
-              onClick={() => navigate("/mealsinday")}
-            >
-              📅 Plany Dnia
-            </button>
             <button
               className="meals-page__button meals-page__button--create"
               onClick={handleCreateClick}
               disabled={isLoading}
             >
               + Utwórz Posiłek
-            </button>
-            <button className="meals-page__button meals-page__button--logout" onClick={handleLogout}>
-              Wyloguj
             </button>
           </div>
         </div>

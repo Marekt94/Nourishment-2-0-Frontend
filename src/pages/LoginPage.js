@@ -29,7 +29,7 @@ export const LoginPage = () => {
     try {
       await authService.login(formData.email, formData.password);
       alert("Zalogowano pomyślnie!");
-      navigate("/dashboard");
+      navigate("/mealsinday");
     } catch (err) {
       setError(err.response?.data?.message || "Nieprawidłowe dane logowania");
       console.error("Login error:", err);

@@ -1,0 +1,24 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f3f4f6;
+}
+
+.layout__content {
+  flex: 1;
+  transition: margin-left 0.3s ease;
+}
+
+/* Desktop - content z marginesem dla sidebara */
+@media (min-width: 769px) {
+  .layout__content {
+    margin-left: 280px;
+  }
+}
+
+/* Mobile - content na całą szerokość */
+@media (max-width: 768px) {
+  .layout__content {
+    margin-left: 0;
+  }
+}

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { looseProductInDayService } from "../../../services/looseProductInDayService";
 import "./MealInDayCard.css";
 
 /**
@@ -10,6 +11,30 @@ import "./MealInDayCard.css";
 const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedMeals, setExpandedMeals] = useState({});
+  const [looseProducts, setLooseProducts] = useState([]);
+  const [looseProductsLoading, setLooseProductsLoading] = useState(false);
+
+  /**
+   * Fetch loose products when card is expanded
+   */
+  useEffect(() => {
+    if (isExpanded && mealInDay.id) {
+      fetchLooseProducts();
+    }
+  }, [isExpanded, mealInDay.id]);
+
+  const fetchLooseProducts = async () => {
+    try {
+      setLooseProductsLoading(true);
+      const data = await looseProductInDayService.getLooseProductsByDay(mealInDay.id);
+      setLooseProducts(data || []);
+    } catch (err) {
+      console.error("Error fetching loose products:", err);
+      setLooseProducts([]);
+    } finally {
+      setLooseProductsLoading(false);
+    }
+  };
 
   /**
    * Calculate total macros for all meals in the day
@@ -24,7 +49,8 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
       { meal: mealInDay.supper, factor: mealInDay.factorSupper || 1 },
     ];
 
-    return meals.reduce(
+    // Calculate totals from meals
+    const mealTotals = meals.reduce(
       (totals, { meal, factor }) => {
         if (!meal || !meal.productsInMeal) return totals;
 
@@ -53,6 +79,30 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
       },
       { calories: 0, proteins: 0, carbs: 0, fat: 0 },
     );
+
+    // Add loose products to totals
+    const looseProductTotals = looseProducts.reduce(
+      (totals, lp) => {
+        const product = lp.product;
+        const weight = lp.weight || 100;
+        const factor = weight / 100;
+
+        return {
+          calories: totals.calories + (product?.kcalPer100 || 0) * factor,
+          proteins: totals.proteins + (product?.proteinsPer100 || product?.proteins || 0) * factor,
+          carbs: totals.carbs + (product?.carbohydratesPer100 || product?.carbohydrates || 0) * factor,
+          fat: totals.fat + (product?.fatsPer100 || product?.fat || 0) * factor,
+        };
+      },
+      { calories: 0, proteins: 0, carbs: 0, fat: 0 },
+    );
+
+    return {
+      calories: mealTotals.calories + looseProductTotals.calories,
+      proteins: mealTotals.proteins + looseProductTotals.proteins,
+      carbs: mealTotals.carbs + looseProductTotals.carbs,
+      fat: mealTotals.fat + looseProductTotals.fat,
+    };
   };
 
   /**
@@ -237,6 +287,39 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
                 </div>
               );
             })}
+          </div>
+
+          {/* Loose Products Section */}
+          <div className="meal-in-day-card__loose-products">
+            <h4>🥗 Luźne produkty</h4>
+            {looseProductsLoading ? (
+              <p className="meal-in-day-card__loading">Ładowanie luźnych produktów...</p>
+            ) : looseProducts.length > 0 ? (
+              <div className="meal-in-day-card__loose-products-list">
+                {looseProducts.map((lp) => {
+                  const product = lp.product;
+                  const weight = lp.weight || 100;
+                  const factor = weight / 100;
+
+                  return (
+                    <div key={lp.id} className="meal-in-day-card__loose-product-item">
+                      <span className="meal-in-day-card__loose-product-name">{product?.name || "Produkt"}</span>
+                      <span className="meal-in-day-card__loose-product-weight">{weight}g</span>
+                      <div className="meal-in-day-card__loose-product-macros">
+                        <span>🔥 {((product?.kcalPer100 || 0) * factor).toFixed(0)}</span>
+                        <span>💪 {((product?.proteinsPer100 || product?.proteins || 0) * factor).toFixed(1)}g</span>
+                        <span>
+                          🍞 {((product?.carbohydratesPer100 || product?.carbohydrates || 0) * factor).toFixed(1)}g
+                        </span>
+                        <span>🥑 {((product?.fatsPer100 || product?.fat || 0) * factor).toFixed(1)}g</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="meal-in-day-card__empty">Brak luźnych produktów</p>
+            )}
           </div>
 
           <div className="meal-in-day-card__summary">

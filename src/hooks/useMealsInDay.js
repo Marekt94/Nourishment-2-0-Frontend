@@ -37,6 +37,7 @@ const useMealsInDay = () => {
   const createMealInDay = useCallback(async (mealInDayData) => {
     try {
       setError(null);
+      console.log("📤 Creating meal in day with data:", mealInDayData);
       const response = await mealInDayService.createMealInDay(mealInDayData);
 
       // Backend returns {id: integer}, merge with sent data
@@ -48,7 +49,9 @@ const useMealsInDay = () => {
       setMealsInDay((prev) => [...prev, newMealInDay]);
       return newMealInDay;
     } catch (err) {
-      console.error("Error creating meal in day:", err);
+      console.error("❌ Error creating meal in day:", err);
+      console.error("❌ Error response:", err.response?.data);
+      console.error("❌ Error status:", err.response?.status);
       const errorMsg = err.response?.data?.message || "Nie udało się utworzyć planu dnia";
       setError(errorMsg);
       throw new Error(errorMsg);

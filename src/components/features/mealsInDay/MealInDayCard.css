@@ -377,3 +377,88 @@
     width: 100%;
   }
 }
+
+/* Loose Products Section */
+.meal-in-day-card__loose-products {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.meal-in-day-card__loose-products h4 {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.meal-in-day-card__loose-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meal-in-day-card__loose-product-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 8px;
+  border: 2px solid #fde68a;
+  transition: all 0.2s;
+}
+
+.meal-in-day-card__loose-product-item:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+.meal-in-day-card__loose-product-name {
+  flex: 1;
+  font-weight: 600;
+  color: #78350f;
+  font-size: 0.95rem;
+}
+
+.meal-in-day-card__loose-product-weight {
+  font-weight: 600;
+  color: #92400e;
+  font-size: 0.9rem;
+}
+
+.meal-in-day-card__loose-product-macros {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #92400e;
+}
+
+.meal-in-day-card__loose-product-macros span {
+  white-space: nowrap;
+}
+
+.meal-in-day-card__loading {
+  color: #9ca3af;
+  font-style: italic;
+  margin: 0;
+  padding: 12px 0;
+}
+
+.meal-in-day-card__empty {
+  color: #9ca3af;
+  font-style: italic;
+  margin: 0;
+  padding: 12px 0;
+}
+
+@media (max-width: 768px) {
+  .meal-in-day-card__loose-product-item {
+    flex-wrap: wrap;
+  }
+
+  .meal-in-day-card__loose-product-macros {
+    width: 100%;
+    justify-content: space-around;
+  }
+}

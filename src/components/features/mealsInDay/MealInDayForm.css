@@ -1,0 +1,527 @@
+.meal-in-day-form {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.meal-in-day-form__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.meal-in-day-form__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* Sections */
+.meal-in-day-form__section {
+  margin-bottom: 2rem;
+}
+
+.meal-in-day-form__section-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Form Fields */
+.meal-in-day-form__row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.meal-in-day-form__field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-in-day-form__field--full {
+  flex: 1 0 100%;
+}
+
+.meal-in-day-form__label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.meal-in-day-form__input {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.meal-in-day-form__input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.meal-in-day-form__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.meal-in-day-form__checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Loading */
+.meal-in-day-form__loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Meals Grid */
+.meal-in-day-form__meals {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.meal-in-day-form__meal-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.meal-in-day-form__meal-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+/* Meal Selector (Dropdown) */
+.meal-in-day-form__meal-selector {
+  flex: 1;
+  position: relative;
+}
+
+.meal-in-day-form__selected-meal {
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #374151;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.meal-in-day-form__selected-meal:hover {
+  border-color: #f59e0b;
+}
+
+.meal-in-day-form__dropdown-arrow {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.meal-in-day-form__clear-meal {
+  position: absolute;
+  right: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #e5e7eb;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: #6b7280;
+  transition: all 0.2s;
+  z-index: 1;
+}
+
+.meal-in-day-form__clear-meal:hover {
+  background: #d1d5db;
+  color: #374151;
+}
+
+/* Dropdown */
+.meal-in-day-form__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background: white;
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  max-height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-in-day-form__dropdown-search {
+  padding: 0.75rem;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.meal-in-day-form__dropdown-list {
+  overflow-y: auto;
+  max-height: 240px;
+}
+
+.meal-in-day-form__dropdown-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.meal-in-day-form__dropdown-item:hover {
+  background: #fef3c7;
+}
+
+.meal-in-day-form__dropdown-item--selected {
+  background: #fde68a;
+  font-weight: 600;
+}
+
+.meal-in-day-form__dropdown-empty {
+  padding: 1rem;
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+/* Factor Input */
+.meal-in-day-form__factor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+}
+
+.meal-in-day-form__factor-label {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.meal-in-day-form__factor-input {
+  width: 70px;
+  padding: 0.75rem 0.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.meal-in-day-form__factor-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+}
+
+/* Macros Summary */
+.meal-in-day-form__macros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+}
+
+.meal-in-day-form__macro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.meal-in-day-form__macro-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.meal-in-day-form__macro-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #78350f;
+}
+
+/* Actions */
+.meal-in-day-form__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.meal-in-day-form__button {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.meal-in-day-form__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.meal-in-day-form__button--cancel {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.meal-in-day-form__button--cancel:hover:not(:disabled) {
+  background: #d1d5db;
+}
+
+.meal-in-day-form__button--submit {
+  background: #f59e0b;
+  color: white;
+}
+
+.meal-in-day-form__button--submit:hover:not(:disabled) {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .meal-in-day-form {
+    padding: 1.5rem;
+  }
+
+  .meal-in-day-form__title {
+    font-size: 1.5rem;
+  }
+
+  .meal-in-day-form__row {
+    flex-direction: column;
+  }
+
+  .meal-in-day-form__meal-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .meal-in-day-form__factor {
+    justify-content: center;
+  }
+
+  .meal-in-day-form__macros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .meal-in-day-form__actions {
+    flex-direction: column-reverse;
+  }
+
+  .meal-in-day-form__button {
+    width: 100%;
+  }
+}
+
+/* Loose Products Section */
+.meal-in-day-form__product-search {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.meal-in-day-form__search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.meal-in-day-form__search-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.meal-in-day-form__dropdown-container {
+  position: relative;
+}
+
+.meal-in-day-form__dropdown-wrapper {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  z-index: 20;
+}
+
+.meal-in-day-form__dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+}
+
+.meal-in-day-form__dropdown-item--disabled {
+  cursor: default;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.meal-in-day-form__dropdown-item--disabled:hover {
+  background: white;
+}
+
+.meal-in-day-form__loose-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.meal-in-day-form__loose-product-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #fef3c7;
+  border: 2px solid #fde68a;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.meal-in-day-form__loose-product-item:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+.meal-in-day-form__loose-product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.meal-in-day-form__loose-product-name {
+  font-weight: 600;
+  color: #78350f;
+  font-size: 1rem;
+}
+
+.meal-in-day-form__loose-product-macros {
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+.meal-in-day-form__loose-product-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.meal-in-day-form__loose-product-weight {
+  width: 80px;
+  padding: 0.5rem;
+  border: 2px solid #f59e0b;
+  border-radius: 6px;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #78350f;
+}
+
+.meal-in-day-form__loose-product-weight:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.meal-in-day-form__loose-product-unit {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.meal-in-day-form__loose-product-remove {
+  padding: 0.5rem;
+  background: #dc2626;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meal-in-day-form__loose-product-remove:hover {
+  background: #b91c1c;
+  transform: scale(1.1);
+}
+
+.meal-in-day-form__empty-message {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 1rem;
+}
+
+/* Responsive adjustments for loose products */
+@media (max-width: 768px) {
+  .meal-in-day-form__loose-product-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .meal-in-day-form__loose-product-controls {
+    justify-content: flex-end;
+  }
+}

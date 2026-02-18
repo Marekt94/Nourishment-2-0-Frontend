@@ -4,14 +4,12 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useProducts } from "../hooks/useProducts";
 import { ProductList } from "../components/features/products/ProductList";
 import { ProductForm } from "../components/features/products/ProductForm";
 import "./ProductsPage.css";
 
 export const ProductsPage = () => {
-  const navigate = useNavigate();
   const { products, isLoading, error, createProduct, updateProduct, deleteProduct } = useProducts();
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -20,11 +18,6 @@ export const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortBy, setSortBy] = useState("name"); // name, kcalPer100, proteins
-
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/");
-  };
 
   const handleCreateClick = () => {
     setEditingProduct(null);
@@ -114,18 +107,12 @@ export const ProductsPage = () => {
         <div className="products-page__header-content">
           <h1 className="products-page__title">📦 Produkty</h1>
           <div className="products-page__header-actions">
-            <button className="products-page__button products-page__button--meals" onClick={() => navigate("/meals")}>
-              🍽️ Posiłki
-            </button>
             <button
               className="products-page__button products-page__button--create"
               onClick={handleCreateClick}
               disabled={isLoading}
             >
               + Utwórz Produkt
-            </button>
-            <button className="products-page__button products-page__button--logout" onClick={handleLogout}>
-              Wyloguj
             </button>
           </div>
         </div>

@@ -2,16 +2,16 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
-import { DashboardPage } from "./pages/DashboardPage";
 import { ProductsPage } from "./pages/ProductsPage";
 import { MealsPage } from "./pages/MealsPage";
 import MealsInDayPage from "./pages/MealsInDayPage";
+import { Layout } from "./components/Layout";
 import { authService } from "./services/authService";
 import "./App.css";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = authService.isAuthenticated();
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return isAuthenticated ? <Layout>{children}</Layout> : <Navigate to="/login" />;
 };
 
 export const App = () => {
@@ -21,14 +21,6 @@ export const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/products"
           element={

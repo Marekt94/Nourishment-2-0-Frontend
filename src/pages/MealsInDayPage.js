@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import useMealsInDay from "../hooks/useMealsInDay";
 import MealInDayList from "../components/features/mealsInDay/MealInDayList";
-import { authService } from "../services/authService";
+import { MealInDayForm } from "../components/features/mealsInDay/MealInDayForm";
 import "./MealsInDayPage.css";
 
 /**
@@ -12,13 +11,13 @@ import "./MealsInDayPage.css";
  * Displays list of meal plans with search and filter options.
  */
 const MealsInDayPage = () => {
-  const navigate = useNavigate();
-  const { mealsInDay, isLoading, error, deleteMealInDay } = useMealsInDay();
+  const { mealsInDay, isLoading, error, createMealInDay, updateMealInDay, deleteMealInDay } = useMealsInDay();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("name"); // name, calories, 5days
   const [showForm, setShowForm] = useState(false);
   const [editingMealInDay, setEditingMealInDay] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
    * Filter and sort meals in day
@@ -75,11 +74,6 @@ const MealsInDayPage = () => {
     return filtered;
   }, [mealsInDay, searchQuery, sortBy]);
 
-  const handleLogout = () => {
-    authService.logout();
-    navigate("/login");
-  };
-
   const handleCreateNew = () => {
     setEditingMealInDay(null);
     setShowForm(true);
@@ -103,107 +97,114 @@ const MealsInDayPage = () => {
     setEditingMealInDay(null);
   };
 
+  const handleFormSubmit = async (formData) => {
+    setIsSubmitting(true);
+    try {
+      let result;
+      if (editingMealInDay) {
+        result = await updateMealInDay(formData);
+      } else {
+        result = await createMealInDay(formData);
+      }
+      // Return result immediately so form can save loose products
+      return result;
+    } catch (err) {
+      console.error("Form submit error:", err);
+      setIsSubmitting(false); // Reset on error
+      throw err; // Re-throw so the form can handle it
+    }
+  };
+
+  const handleFormComplete = () => {
+    // Called after form successfully completes (including loose products)
+    setIsSubmitting(false);
+    setShowForm(false);
+    setEditingMealInDay(null);
+    if (editingMealInDay) {
+      alert("Plan dnia zaktualizowany!");
+    } else {
+      alert("Plan dnia utworzony!");
+    }
+  };
+
+  const handleFormError = (err) => {
+    // Called if form encounters an error
+    setIsSubmitting(false);
+    alert(`Błąd: ${err.message}`);
+  };
+
   return (
     <div className="meals-in-day-page">
       {/* Header */}
       <header className="meals-in-day-page__header">
-        <div className="meals-in-day-page__title-section">
+        <div className="meals-in-day-page__header-content">
           <h1 className="meals-in-day-page__title">📅 Plany Dnia</h1>
-          <p className="meals-in-day-page__subtitle">Zarządzaj planami posiłków na cały dzień</p>
-        </div>
-        <div className="meals-in-day-page__header-buttons">
-          <button
-            className="meals-in-day-page__button meals-in-day-page__button--products"
-            onClick={() => navigate("/products")}
-          >
-            📦 Produkty
-          </button>
-          <button
-            className="meals-in-day-page__button meals-in-day-page__button--meals"
-            onClick={() => navigate("/meals")}
-          >
-            🍽️ Posiłki
-          </button>
-          <button className="meals-in-day-page__button meals-in-day-page__button--create" onClick={handleCreateNew}>
-            + Utwórz Plan Dnia
-          </button>
-          <button className="meals-in-day-page__button meals-in-day-page__button--logout" onClick={handleLogout}>
-            Wyloguj
-          </button>
-        </div>
-      </header>
-
-      {/* Search and Filter Controls */}
-      {!showForm && (
-        <div className="meals-in-day-page__controls">
-          <div className="meals-in-day-page__search">
-            <input
-              type="text"
-              placeholder="🔍 Szukaj planu dnia..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="meals-in-day-page__search-input"
-            />
-            {searchQuery && (
-              <button className="meals-in-day-page__clear-btn" onClick={() => setSearchQuery("")}>
-                ✕
-              </button>
-            )}
-          </div>
-
-          <div className="meals-in-day-page__filters">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="meals-in-day-page__sort-select"
-            >
-              <option value="name">📝 Sortuj: Nazwa</option>
-              <option value="calories">🔥 Sortuj: Kalorie</option>
-              <option value="5days">📅 Sortuj: 5 dni</option>
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* Form (Placeholder) */}
-      {showForm && (
-        <div className="meals-in-day-page__form">
-          <div className="meals-in-day-page__form-placeholder">
-            <h3>{editingMealInDay ? "✏️ Edytuj Plan Dnia" : "➕ Utwórz Nowy Plan Dnia"}</h3>
-            <p>Formularz planu dnia (wkrótce)</p>
-            <p className="meals-in-day-page__form-info">
-              Tutaj będzie formularz do tworzenia/edycji planów dnia z możliwością:
-            </p>
-            <ul className="meals-in-day-page__form-features">
-              <li>📝 Nazwa planu dnia</li>
-              <li>📅 Opcja "dla 5 dni"</li>
-              <li>🌅 Śniadanie + mnożnik</li>
-              <li>🥐 II Śniadanie + mnożnik</li>
-              <li>🍽️ Obiad + mnożnik</li>
-              <li>☕ Podwieczorek + mnożnik</li>
-              <li>🍲 Kolacja + mnożnik</li>
-              <li>🥛 Kolacja II + mnożnik</li>
-              <li>📊 Podgląd sumy makroskładników na żywo</li>
-            </ul>
-            <button className="meals-in-day-page__button meals-in-day-page__button--cancel" onClick={handleFormClose}>
-              Powrót do listy
+          <div className="meals-in-day-page__header-actions">
+            <button className="meals-in-day-page__button meals-in-day-page__button--create" onClick={handleCreateNew}>
+              + Utwórz Plan Dnia
             </button>
           </div>
         </div>
-      )}
+      </header>
 
-      {/* Meals In Day List */}
-      {!showForm && (
-        <div className="meals-in-day-page__content">
-          <MealInDayList
-            mealsInDay={filteredMealsInDay}
-            isLoading={isLoading}
-            error={error}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+      {/* Main Content */}
+      <main className="meals-in-day-page__main">
+        <div className="meals-in-day-page__container">
+          {showForm ? (
+            <div className="meals-in-day-page__form-wrapper">
+              <MealInDayForm
+                mealInDay={editingMealInDay}
+                onSubmit={handleFormSubmit}
+                onSuccess={handleFormComplete}
+                onError={handleFormError}
+                onCancel={handleFormClose}
+                isLoading={isSubmitting}
+              />
+            </div>
+          ) : (
+            <>
+              {/* Search and Filter Controls */}
+              <div className="meals-in-day-page__controls">
+                <div className="meals-in-day-page__search">
+                  <input
+                    type="text"
+                    placeholder="🔍 Szukaj planu dnia..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="meals-in-day-page__search-input"
+                  />
+                  {searchQuery && (
+                    <button className="meals-in-day-page__clear-btn" onClick={() => setSearchQuery("")}>
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <div className="meals-in-day-page__filters">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="meals-in-day-page__sort-select"
+                  >
+                    <option value="name">📝 Sortuj: Nazwa</option>
+                    <option value="calories">🔥 Sortuj: Kalorie</option>
+                    <option value="5days">📅 Sortuj: 5 dni</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Meals List */}
+              <MealInDayList
+                mealsInDay={filteredMealsInDay}
+                isLoading={isLoading}
+                error={error}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </>
+          )}
         </div>
-      )}
+      </main>
     </div>
   );
 };
