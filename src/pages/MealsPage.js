@@ -74,21 +74,16 @@ export const MealsPage = () => {
 
   return (
     <div className="meals-page">
-      {/* Header */}
-      <header className="meals-page__header">
-        <div className="meals-page__header-content">
-          <h1 className="meals-page__title">🍽️ Posiłki</h1>
-          <div className="meals-page__header-actions">
-            <button
-              className="meals-page__button meals-page__button--create"
-              onClick={handleCreateClick}
-              disabled={isLoading}
-            >
-              + Utwórz Posiłek
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Page Header */}
+      <div className="meals-page__header">
+        <h1 className="meals-page__title">🍽️ Potrawy</h1>
+        {!showForm && (
+          <button onClick={handleCreateClick} className="meals-page__create-button">
+            <span className="meals-page__create-icon">➕</span>
+            Dodaj Potrawę
+          </button>
+        )}
+      </div>
 
       {/* Main Content */}
       <main className="meals-page__main">

@@ -1,36 +1,35 @@
+/* MealsPage.css */
+
 .meals-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.meals-page__header {
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.meals-page__header-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: 24px;
+}
+
+/* Header */
+.meals-page__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  margin-bottom: 32px;
+  gap: 24px;
 }
 
 .meals-page__title {
   margin: 0;
-  font-size: 2rem;
+  font-size: 32px;
   font-weight: 700;
-  color: #1f2937;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.meals-page__header-actions {
-  display: flex;
-  gap: 1rem;
+.meals-page__subtitle {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
 }
 
 .meals-page__button {
@@ -53,14 +52,29 @@
 }
 
 .meals-page__button--create {
-  background: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  white-space: nowrap;
 }
 
-.meals-page__button--create:hover:not(:disabled) {
-  background: #059669;
+.meals-page__button--create:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.meals-page__button--create:active {
+  transform: translateY(0);
 }
 
 .meals-page__button--mealsinday {
@@ -223,40 +237,25 @@
 }
 
 @media (max-width: 768px) {
-  .meals-page__header-content {
+  .meals-page {
+    padding: 16px;
+  }
+
+  .meals-page__header {
     flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+    align-items: flex-start;
   }
 
   .meals-page__title {
-    font-size: 1.5rem;
-    text-align: center;
+    font-size: 24px;
   }
 
-  .meals-page__header-actions {
-    flex-direction: column;
+  .meals-page__subtitle {
+    font-size: 14px;
   }
 
-  .meals-page__button {
+  .meals-page__create-button {
     width: 100%;
-  }
-
-  .meals-page__main {
-    padding: 1rem;
-  }
-
-  .meals-page__controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .meals-page__search-wrapper {
-    min-width: auto;
-  }
-
-  .meals-page__sort {
-    min-width: auto;
-    width: 100%;
+    justify-content: center;
   }
 }

@@ -47,7 +47,7 @@ const looseProductInDayService = {
    * @param {Object} looseProductData - {dayId, product: {id}, weight}
    * @returns {Promise<Object>} Response with {id: integer}
    */
-  async createLooseProduct(looseProductData) {
+  async createLooseProductInDay(looseProductData) {
     const response = await api.post("/looseproductsinday", looseProductData);
     return response.data; // Returns {id: integer}
   },
@@ -57,7 +57,7 @@ const looseProductInDayService = {
    * @param {Object} looseProductData - LooseProductInDay data (must include id)
    * @returns {Promise<Object>} Response (200 with no body)
    */
-  async updateLooseProduct(looseProductData) {
+  async updateLooseProductInDay(looseProductData) {
     const response = await api.put("/looseproductsinday", looseProductData);
     return response.data;
   },

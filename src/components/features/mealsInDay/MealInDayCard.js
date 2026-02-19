@@ -10,9 +10,7 @@ import "./MealInDayCard.css";
  */
 const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [expandedMeals, setExpandedMeals] = useState({});
   const [looseProducts, setLooseProducts] = useState([]);
-  const [looseProductsLoading, setLooseProductsLoading] = useState(false);
 
   /**
    * Fetch loose products when card is expanded
@@ -25,330 +23,263 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
 
   const fetchLooseProducts = async () => {
     try {
-      setLooseProductsLoading(true);
       const data = await looseProductInDayService.getLooseProductsByDay(mealInDay.id);
       setLooseProducts(data || []);
     } catch (err) {
       console.error("Error fetching loose products:", err);
       setLooseProducts([]);
-    } finally {
-      setLooseProductsLoading(false);
     }
   };
 
   /**
    * Calculate total macros for all meals in the day
    */
+  // Calculate total macros from all meals and loose products
   const getTotalMacros = () => {
     const meals = [
-      { meal: mealInDay.breakfast, factor: mealInDay.factorBreakfast || 1 },
-      { meal: mealInDay.secondBreakfast, factor: mealInDay.factorSecondBreakfast || 1 },
-      { meal: mealInDay.lunch, factor: mealInDay.factorLunch || 1 },
-      { meal: mealInDay.afternoonSnack, factor: mealInDay.factorAfternoonSnack || 1 },
-      { meal: mealInDay.dinner, factor: mealInDay.factorDinner || 1 },
-      { meal: mealInDay.supper, factor: mealInDay.factorSupper || 1 },
+      { meal: mealInDay.breakfast, factor: mealInDay.factorBreakfast || 1.0 },
+      { meal: mealInDay.secondBreakfast, factor: mealInDay.factorSecondBreakfast || 1.0 },
+      { meal: mealInDay.lunch, factor: mealInDay.factorLunch || 1.0 },
+      { meal: mealInDay.afternoonSnack, factor: mealInDay.factorAfternoonSnack || 1.0 },
+      { meal: mealInDay.dinner, factor: mealInDay.factorDinner || 1.0 },
+      { meal: mealInDay.supper, factor: mealInDay.factorSupper || 1.0 },
     ];
 
-    // Calculate totals from meals
-    const mealTotals = meals.reduce(
-      (totals, { meal, factor }) => {
-        if (!meal || !meal.productsInMeal) return totals;
+    console.log("📊 Calculating totals for:", mealInDay.name);
+    let totals = { calories: 0, proteins: 0, carbs: 0, fats: 0 };
 
-        const mealMacros = meal.productsInMeal.reduce(
-          (mealTotals, item) => {
-            const product = item.product;
-            const weight = item.weight || 100;
-            const productFactor = weight / 100;
+    // Add macros from meals
+    meals.forEach(({ meal, factor }, index) => {
+      console.log(`  Meal ${index + 1}:`, meal?.name || "empty", `Factor: ${factor}`);
+      if (meal?.productsInMeal && Array.isArray(meal.productsInMeal)) {
+        console.log(`    Products in meal:`, meal.productsInMeal.length);
+        meal.productsInMeal.forEach((item) => {
+          const weight = item.weight || 100;
+          const product = item.product || {};
 
-            return {
-              calories: mealTotals.calories + (product?.kcalPer100 || 0) * productFactor,
-              proteins: mealTotals.proteins + (product?.proteins || 0) * productFactor,
-              carbs: mealTotals.carbs + (product?.carbohydrates || 0) * productFactor,
-              fat: mealTotals.fat + (product?.fat || 0) * productFactor,
-            };
-          },
-          { calories: 0, proteins: 0, carbs: 0, fat: 0 },
-        );
+          // Support both field naming conventions
+          const kcal = product.kcalPer100 || product.kcal || 0;
+          const proteins = product.proteinsPer100 || product.proteins || 0;
+          const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
+          const fats = product.fatsPer100 || product.fat || 0;
 
-        return {
-          calories: totals.calories + mealMacros.calories * factor,
-          proteins: totals.proteins + mealMacros.proteins * factor,
-          carbs: totals.carbs + mealMacros.carbs * factor,
-          fat: totals.fat + mealMacros.fat * factor,
-        };
-      },
-      { calories: 0, proteins: 0, carbs: 0, fat: 0 },
-    );
+          console.log(`      ${product.name}: ${weight}g × ${factor} = ${(kcal * weight * factor) / 100} kcal`);
 
-    // Add loose products to totals
-    const looseProductTotals = looseProducts.reduce(
-      (totals, lp) => {
-        const product = lp.product;
-        const weight = lp.weight || 100;
-        const factor = weight / 100;
+          totals.calories += (kcal * weight * factor) / 100;
+          totals.proteins += (proteins * weight * factor) / 100;
+          totals.carbs += (carbs * weight * factor) / 100;
+          totals.fats += (fats * weight * factor) / 100;
+        });
+      }
+    });
 
-        return {
-          calories: totals.calories + (product?.kcalPer100 || 0) * factor,
-          proteins: totals.proteins + (product?.proteinsPer100 || product?.proteins || 0) * factor,
-          carbs: totals.carbs + (product?.carbohydratesPer100 || product?.carbohydrates || 0) * factor,
-          fat: totals.fat + (product?.fatsPer100 || product?.fat || 0) * factor,
-        };
-      },
-      { calories: 0, proteins: 0, carbs: 0, fat: 0 },
-    );
+    // Add macros from loose products
+    console.log(`  Loose products:`, looseProducts.length);
+    looseProducts.forEach(({ product, weight }) => {
+      const kcal = product.kcalPer100 || product.kcal || 0;
+      const proteins = product.proteinsPer100 || product.proteins || 0;
+      const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
+      const fats = product.fatsPer100 || product.fat || 0;
 
-    return {
-      calories: mealTotals.calories + looseProductTotals.calories,
-      proteins: mealTotals.proteins + looseProductTotals.proteins,
-      carbs: mealTotals.carbs + looseProductTotals.carbs,
-      fat: mealTotals.fat + looseProductTotals.fat,
-    };
+      console.log(`    ${product.name}: ${weight}g = ${(kcal * weight) / 100} kcal`);
+
+      totals.calories += (kcal * weight) / 100;
+      totals.proteins += (proteins * weight) / 100;
+      totals.carbs += (carbs * weight) / 100;
+      totals.fats += (fats * weight) / 100;
+    });
+
+    console.log("📊 Final totals:", totals);
+    return totals;
   };
 
-  /**
-   * Count total number of meals (non-null)
-   */
-  const getMealsCount = () => {
-    return [
-      mealInDay.breakfast,
-      mealInDay.secondBreakfast,
-      mealInDay.lunch,
-      mealInDay.afternoonSnack,
-      mealInDay.dinner,
-      mealInDay.supper,
-    ].filter(Boolean).length;
+  const totalMacros = getTotalMacros();
+
+  // Safety check for undefined values
+  const safeMacros = {
+    calories: totalMacros?.calories || 0,
+    proteins: totalMacros?.proteins || 0,
+    carbs: totalMacros?.carbs || 0,
+    fats: totalMacros?.fats || 0,
   };
 
-  /**
-   * Get macros for a single meal
-   */
-  const getMealMacros = (meal, factor = 1) => {
-    if (!meal || !meal.productsInMeal) {
-      return { calories: 0, proteins: 0, carbs: 0, fat: 0 };
-    }
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
-    const mealTotals = meal.productsInMeal.reduce(
-      (totals, item) => {
-        const product = item.product;
+  // Helper function to render a meal
+  const renderMeal = (label, meal, factor) => {
+    if (!meal) return null;
+
+    // Calculate meal macros
+    let mealMacros = { calories: 0, proteins: 0, carbs: 0, fats: 0 };
+    if (meal.productsInMeal && meal.productsInMeal.length > 0) {
+      meal.productsInMeal.forEach((item) => {
         const weight = item.weight || 100;
-        const productFactor = weight / 100;
+        const product = item.product || {};
 
-        return {
-          calories: totals.calories + (product?.kcalPer100 || 0) * productFactor,
-          proteins: totals.proteins + (product?.proteins || 0) * productFactor,
-          carbs: totals.carbs + (product?.carbohydrates || 0) * productFactor,
-          fat: totals.fat + (product?.fat || 0) * productFactor,
-        };
-      },
-      { calories: 0, proteins: 0, carbs: 0, fat: 0 },
-    );
+        const kcal = product.kcalPer100 || product.kcal || 0;
+        const proteins = product.proteinsPer100 || product.proteins || 0;
+        const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
+        const fats = product.fatsPer100 || product.fat || 0;
 
-    return {
-      calories: mealTotals.calories * factor,
-      proteins: mealTotals.proteins * factor,
-      carbs: mealTotals.carbs * factor,
-      fat: mealTotals.fat * factor,
-    };
-  };
-
-  const totals = getTotalMacros();
-  const mealsCount = getMealsCount();
-
-  const handleDelete = () => {
-    if (window.confirm(`Czy na pewno chcesz usunąć plan dnia "${mealInDay.name}"?`)) {
-      onDelete(mealInDay.id);
+        mealMacros.calories += (kcal * weight * factor) / 100;
+        mealMacros.proteins += (proteins * weight * factor) / 100;
+        mealMacros.carbs += (carbs * weight * factor) / 100;
+        mealMacros.fats += (fats * weight * factor) / 100;
+      });
     }
-  };
 
-  const toggleMealExpansion = (key) => {
-    setExpandedMeals((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    return (
+      <div className="meal-in-day-card__meal">
+        <div className="meal-in-day-card__meal-header">
+          <div className="meal-in-day-card__meal-title">
+            <span className="meal-in-day-card__meal-label">{label}</span>
+            <span className="meal-in-day-card__meal-name">{meal.name}</span>
+            {factor !== 1.0 && <span className="meal-in-day-card__meal-factor">×{factor}</span>}
+          </div>
+          <div className="meal-in-day-card__meal-macros-summary">
+            <span className="meal-in-day-card__meal-macro">🔥 {mealMacros.calories.toFixed(0)} kcal</span>
+            <span className="meal-in-day-card__meal-macro">🥩 {mealMacros.proteins.toFixed(1)}g</span>
+            <span className="meal-in-day-card__meal-macro">🍞 {mealMacros.carbs.toFixed(1)}g</span>
+            <span className="meal-in-day-card__meal-macro">🥑 {mealMacros.fats.toFixed(1)}g</span>
+          </div>
+        </div>
+        {meal.productsInMeal && meal.productsInMeal.length > 0 && (
+          <div className="meal-in-day-card__products">
+            {meal.productsInMeal.map((item) => (
+              <div key={item.id} className="meal-in-day-card__product">
+                <span className="meal-in-day-card__product-name">{item.product.name}</span>
+                <span className="meal-in-day-card__product-weight">{item.weight}g</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
-
-  const mealSlots = [
-    { key: "breakfast", label: "🌅 Śniadanie", meal: mealInDay.breakfast, factor: mealInDay.factorBreakfast },
-    {
-      key: "secondBreakfast",
-      label: "🥐 II Śniadanie",
-      meal: mealInDay.secondBreakfast,
-      factor: mealInDay.factorSecondBreakfast,
-    },
-    { key: "lunch", label: "🍽️ Obiad", meal: mealInDay.lunch, factor: mealInDay.factorLunch },
-    {
-      key: "afternoonSnack",
-      label: "☕ Podwieczorek",
-      meal: mealInDay.afternoonSnack,
-      factor: mealInDay.factorAfternoonSnack,
-    },
-    { key: "dinner", label: "🍲 Kolacja", meal: mealInDay.dinner, factor: mealInDay.factorDinner },
-    { key: "supper", label: "🥛 Kolacja II", meal: mealInDay.supper, factor: mealInDay.factorSupper },
-  ];
 
   return (
-    <div className="meal-in-day-card">
-      <div className="meal-in-day-card__compact" onClick={() => setIsExpanded(!isExpanded)}>
-        <div className="meal-in-day-card__header">
-          <h3 className="meal-in-day-card__name">{mealInDay.name || "Plan bez nazwy"}</h3>
-          {mealInDay.for5Days && (
-            <span className="meal-in-day-card__badge meal-in-day-card__badge--5days">📅 5 dni</span>
-          )}
-          <span className="meal-in-day-card__badge">
-            🍽️ {mealsCount} {mealsCount === 1 ? "posiłek" : mealsCount < 5 ? "posiłki" : "posiłków"}
-          </span>
+    <div className={`meal-in-day-card ${isExpanded ? "meal-in-day-card--expanded" : ""}`}>
+      {/* Collapsed View */}
+      <div className="meal-in-day-card__header" onClick={toggleExpand}>
+        <div className="meal-in-day-card__title">
+          <h3>{mealInDay.name}</h3>
+          {mealInDay.for5Days && <span className="meal-in-day-card__badge">📅 5 dni</span>}
         </div>
-        <div className="meal-in-day-card__macros">
-          <span className="meal-in-day-card__macro">
-            <strong>🔥</strong> {totals.calories.toFixed(0)} kcal
-          </span>
-          <span className="meal-in-day-card__macro">
-            <strong>💪</strong> {totals.proteins.toFixed(1)}g
-          </span>
-          <span className="meal-in-day-card__macro">
-            <strong>🍞</strong> {totals.carbs.toFixed(1)}g
-          </span>
-          <span className="meal-in-day-card__macro">
-            <strong>🥑</strong> {totals.fat.toFixed(1)}g
-          </span>
+        <div className="meal-in-day-card__summary">
+          <div className="meal-in-day-card__summary-item meal-in-day-card__summary-item--calories">
+            <span className="meal-in-day-card__summary-icon">🔥</span>
+            <div className="meal-in-day-card__summary-content">
+              <span className="meal-in-day-card__summary-value">{safeMacros.calories.toFixed(0)}</span>
+              <span className="meal-in-day-card__summary-unit">kcal</span>
+            </div>
+          </div>
+          <div className="meal-in-day-card__summary-item meal-in-day-card__summary-item--protein">
+            <span className="meal-in-day-card__summary-icon">🥩</span>
+            <div className="meal-in-day-card__summary-content">
+              <span className="meal-in-day-card__summary-label">B</span>
+              <span className="meal-in-day-card__summary-value">{safeMacros.proteins.toFixed(1)}g</span>
+            </div>
+          </div>
+          <div className="meal-in-day-card__summary-item meal-in-day-card__summary-item--carbs">
+            <span className="meal-in-day-card__summary-icon">🍞</span>
+            <div className="meal-in-day-card__summary-content">
+              <span className="meal-in-day-card__summary-label">W</span>
+              <span className="meal-in-day-card__summary-value">{safeMacros.carbs.toFixed(1)}g</span>
+            </div>
+          </div>
+          <div className="meal-in-day-card__summary-item meal-in-day-card__summary-item--fats">
+            <span className="meal-in-day-card__summary-icon">🥑</span>
+            <div className="meal-in-day-card__summary-content">
+              <span className="meal-in-day-card__summary-label">T</span>
+              <span className="meal-in-day-card__summary-value">{safeMacros.fats.toFixed(1)}g</span>
+            </div>
+          </div>
+          <div className="meal-in-day-card__expand-icon">{isExpanded ? "▲" : "▼"}</div>
         </div>
-        <button className="meal-in-day-card__expand-btn">{isExpanded ? "▲" : "▼"}</button>
       </div>
 
+      {/* Expanded View */}
       {isExpanded && (
-        <div className="meal-in-day-card__details">
+        <div className="meal-in-day-card__content">
+          {/* Meals List */}
           <div className="meal-in-day-card__meals">
-            <h4>📋 Posiłki w dniu</h4>
-            {mealSlots.map(({ key, label, meal, factor }) => {
-              if (!meal) {
+            <h4>Posiłki:</h4>
+            {renderMeal("🌅 Śniadanie", mealInDay.breakfast, mealInDay.factorBreakfast)}
+            {renderMeal("🥐 Drugie śniadanie", mealInDay.secondBreakfast, mealInDay.factorSecondBreakfast)}
+            {renderMeal("🍽️ Obiad", mealInDay.lunch, mealInDay.factorLunch)}
+            {renderMeal("☕ Podwieczorek", mealInDay.afternoonSnack, mealInDay.factorAfternoonSnack)}
+            {renderMeal("🥘 Kolacja", mealInDay.dinner, mealInDay.factorDinner)}
+            {renderMeal("🌙 Kolacja II", mealInDay.supper, mealInDay.factorSupper)}
+          </div>
+
+          {/* Loose Products */}
+          {looseProducts.length > 0 && (
+            <div className="meal-in-day-card__loose-products">
+              <h4>Luźne produkty:</h4>
+              {looseProducts.map((lp) => {
+                const product = lp.product;
+                const weight = lp.weight;
+                const kcal = ((product.kcalPer100 || product.kcal || 0) * weight) / 100;
+                const proteins = ((product.proteinsPer100 || product.proteins || 0) * weight) / 100;
+                const carbs =
+                  ((product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0) * weight) / 100;
+                const fats = ((product.fatsPer100 || product.fat || 0) * weight) / 100;
+
                 return (
-                  <div key={key} className="meal-in-day-card__meal-slot meal-in-day-card__meal-slot--empty">
-                    <span className="meal-in-day-card__meal-label">{label}</span>
-                    <span className="meal-in-day-card__meal-empty">Brak posiłku</span>
+                  <div key={lp.id} className="meal-in-day-card__loose-product">
+                    <div className="meal-in-day-card__loose-product-header">
+                      <span className="meal-in-day-card__loose-product-name">{product.name}</span>
+                      <span className="meal-in-day-card__loose-product-weight">{weight}g</span>
+                    </div>
+                    <div className="meal-in-day-card__loose-product-macros">
+                      <span className="meal-in-day-card__loose-product-macro">🔥 {kcal.toFixed(0)} kcal</span>
+                      <span className="meal-in-day-card__loose-product-macro">🥩 B: {proteins.toFixed(1)}g</span>
+                      <span className="meal-in-day-card__loose-product-macro">🍞 W: {carbs.toFixed(1)}g</span>
+                      <span className="meal-in-day-card__loose-product-macro">🥑 T: {fats.toFixed(1)}g</span>
+                    </div>
                   </div>
                 );
-              }
+              })}
+            </div>
+          )}
 
-              const macros = getMealMacros(meal, factor || 1);
-              const productsCount = meal.productsInMeal?.length || 0;
-              const isMealExpanded = expandedMeals[key];
-
-              return (
-                <div key={key} className="meal-in-day-card__meal-slot">
-                  <div
-                    className="meal-in-day-card__meal-header"
-                    onClick={() => toggleMealExpansion(key)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <span className="meal-in-day-card__meal-label">{label}</span>
-                    <span className="meal-in-day-card__meal-name">{meal.name}</span>
-                    {factor && factor !== 1 && (
-                      <span className="meal-in-day-card__meal-factor">×{factor.toFixed(2)}</span>
-                    )}
-                    <button className="meal-in-day-card__meal-expand-btn">{isMealExpanded ? "▲" : "▼"}</button>
-                  </div>
-                  <div className="meal-in-day-card__meal-info">
-                    <span className="meal-in-day-card__meal-products">
-                      {productsCount} {productsCount === 1 ? "produkt" : productsCount < 5 ? "produkty" : "produktów"}
-                    </span>
-                    <div className="meal-in-day-card__meal-macros">
-                      <span>🔥 {macros.calories.toFixed(0)}</span>
-                      <span>💪 {macros.proteins.toFixed(1)}g</span>
-                      <span>🍞 {macros.carbs.toFixed(1)}g</span>
-                      <span>🥑 {macros.fat.toFixed(1)}g</span>
-                    </div>
-                  </div>
-
-                  {isMealExpanded && meal.productsInMeal && meal.productsInMeal.length > 0 && (
-                    <div className="meal-in-day-card__meal-products-list">
-                      <h5>Składniki:</h5>
-                      {meal.productsInMeal.map((item, idx) => {
-                        const product = item.product;
-                        const weight = item.weight || 100;
-                        const productFactor = weight / 100;
-
-                        return (
-                          <div key={idx} className="meal-in-day-card__product-item">
-                            <span className="meal-in-day-card__product-name">
-                              {product?.name || "Produkt bez nazwy"}
-                            </span>
-                            <span className="meal-in-day-card__product-weight">{weight}g</span>
-                            <div className="meal-in-day-card__product-macros">
-                              <span>🔥 {((product?.kcalPer100 || 0) * productFactor).toFixed(0)}</span>
-                              <span>💪 {((product?.proteins || 0) * productFactor).toFixed(1)}g</span>
-                              <span>🍞 {((product?.carbohydrates || 0) * productFactor).toFixed(1)}g</span>
-                              <span>🥑 {((product?.fat || 0) * productFactor).toFixed(1)}g</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Loose Products Section */}
-          <div className="meal-in-day-card__loose-products">
-            <h4>🥗 Luźne produkty</h4>
-            {looseProductsLoading ? (
-              <p className="meal-in-day-card__loading">Ładowanie luźnych produktów...</p>
-            ) : looseProducts.length > 0 ? (
-              <div className="meal-in-day-card__loose-products-list">
-                {looseProducts.map((lp) => {
-                  const product = lp.product;
-                  const weight = lp.weight || 100;
-                  const factor = weight / 100;
-
-                  return (
-                    <div key={lp.id} className="meal-in-day-card__loose-product-item">
-                      <span className="meal-in-day-card__loose-product-name">{product?.name || "Produkt"}</span>
-                      <span className="meal-in-day-card__loose-product-weight">{weight}g</span>
-                      <div className="meal-in-day-card__loose-product-macros">
-                        <span>🔥 {((product?.kcalPer100 || 0) * factor).toFixed(0)}</span>
-                        <span>💪 {((product?.proteinsPer100 || product?.proteins || 0) * factor).toFixed(1)}g</span>
-                        <span>
-                          🍞 {((product?.carbohydratesPer100 || product?.carbohydrates || 0) * factor).toFixed(1)}g
-                        </span>
-                        <span>🥑 {((product?.fatsPer100 || product?.fat || 0) * factor).toFixed(1)}g</span>
-                      </div>
-                    </div>
-                  );
-                })}
+          {/* Total Macros */}
+          <div className="meal-in-day-card__total-macros">
+            <h4>Łącznie:</h4>
+            <div className="meal-in-day-card__macros-grid">
+              <div className="meal-in-day-card__macro-item">
+                <span className="meal-in-day-card__macro-label">Kalorie:</span>
+                <span className="meal-in-day-card__macro-value">{safeMacros.calories.toFixed(0)} kcal</span>
               </div>
-            ) : (
-              <p className="meal-in-day-card__empty">Brak luźnych produktów</p>
-            )}
-          </div>
-
-          <div className="meal-in-day-card__summary">
-            <h4>📊 Podsumowanie dnia</h4>
-            <div className="meal-in-day-card__summary-macros">
-              <div className="meal-in-day-card__summary-item">
-                <span className="meal-in-day-card__summary-label">🔥 Kalorie</span>
-                <span className="meal-in-day-card__summary-value">{totals.calories.toFixed(0)} kcal</span>
+              <div className="meal-in-day-card__macro-item">
+                <span className="meal-in-day-card__macro-label">Białko:</span>
+                <span className="meal-in-day-card__macro-value">{safeMacros.proteins.toFixed(1)}g</span>
               </div>
-              <div className="meal-in-day-card__summary-item">
-                <span className="meal-in-day-card__summary-label">💪 Białko</span>
-                <span className="meal-in-day-card__summary-value">{totals.proteins.toFixed(1)}g</span>
+              <div className="meal-in-day-card__macro-item">
+                <span className="meal-in-day-card__macro-label">Węglowodany:</span>
+                <span className="meal-in-day-card__macro-value">{safeMacros.carbs.toFixed(1)}g</span>
               </div>
-              <div className="meal-in-day-card__summary-item">
-                <span className="meal-in-day-card__summary-label">🍞 Węglowodany</span>
-                <span className="meal-in-day-card__summary-value">{totals.carbs.toFixed(1)}g</span>
-              </div>
-              <div className="meal-in-day-card__summary-item">
-                <span className="meal-in-day-card__summary-label">🥑 Tłuszcze</span>
-                <span className="meal-in-day-card__summary-value">{totals.fat.toFixed(1)}g</span>
+              <div className="meal-in-day-card__macro-item">
+                <span className="meal-in-day-card__macro-label">Tłuszcze:</span>
+                <span className="meal-in-day-card__macro-value">{safeMacros.fats.toFixed(1)}g</span>
               </div>
             </div>
           </div>
 
+          {/* Actions */}
           <div className="meal-in-day-card__actions">
-            <button className="meal-in-day-card__btn meal-in-day-card__btn--edit" onClick={() => onEdit(mealInDay)}>
+            <button
+              onClick={() => onEdit(mealInDay)}
+              className="meal-in-day-card__button meal-in-day-card__button--edit"
+            >
               ✏️ Edytuj
             </button>
-            <button className="meal-in-day-card__btn meal-in-day-card__btn--delete" onClick={handleDelete}>
+            <button
+              onClick={() => onDelete(mealInDay.id)}
+              className="meal-in-day-card__button meal-in-day-card__button--delete"
+            >
               🗑️ Usuń
             </button>
           </div>

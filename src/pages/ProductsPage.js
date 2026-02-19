@@ -102,88 +102,81 @@ export const ProductsPage = () => {
 
   return (
     <div className="products-page">
-      {/* Header */}
-      <header className="products-page__header">
-        <div className="products-page__header-content">
-          <h1 className="products-page__title">📦 Produkty</h1>
-          <div className="products-page__header-actions">
-            <button
-              className="products-page__button products-page__button--create"
-              onClick={handleCreateClick}
-              disabled={isLoading}
-            >
-              + Utwórz Produkt
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Page Header */}
+      <div className="products-page__header">
+        <h1 className="products-page__title">🥗 Produkty</h1>
+        {!showForm && (
+          <button onClick={handleCreateClick} className="products-page__create-button">
+            <span className="products-page__create-icon">➕</span>
+            Dodaj Produkt
+          </button>
+        )}
+      </div>
 
       {/* Main Content */}
-      <main className="products-page__main">
-        <div className="products-page__container">
-          {showForm ? (
-            <div className="products-page__form-wrapper">
-              <ProductForm
-                product={editingProduct}
-                onSubmit={handleFormSubmit}
-                onCancel={handleFormCancel}
-                isLoading={isLoading}
-              />
-            </div>
-          ) : (
-            <>
-              {/* Search and Filter Bar */}
-              <div className="products-page__controls">
-                <div className="products-page__search-wrapper">
-                  <input
-                    type="text"
-                    className="products-page__search"
-                    placeholder="🔍 Search products by name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  {searchTerm && (
-                    <button
-                      className="products-page__clear-search"
-                      onClick={() => setSearchTerm("")}
-                      title="Clear search"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                <select
-                  className="products-page__filter"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  <option value="">All Categories</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-
-                <select className="products-page__sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                  <option value="name">Sort by Name</option>
-                  <option value="kcalPer100">Sort by Calories</option>
-                  <option value="proteins">Sort by Protein</option>
-                </select>
+      <div className="products-page__container">
+        {showForm ? (
+          <div className="products-page__form-wrapper">
+            <ProductForm
+              product={editingProduct}
+              onSubmit={handleFormSubmit}
+              onCancel={handleFormCancel}
+              isLoading={isLoading}
+            />
+          </div>
+        ) : (
+          <>
+            {/* Search and Filter Bar */}
+            <div className="products-page__controls">
+              <div className="products-page__search-wrapper">
+                <input
+                  type="text"
+                  className="products-page__search"
+                  placeholder="🔍 Szukaj produktów po nazwie..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button
+                    className="products-page__clear-search"
+                    onClick={() => setSearchTerm("")}
+                    title="Wyczyść wyszukiwanie"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
 
-              <ProductList
-                products={filteredProducts}
-                isLoading={isLoading}
-                error={error}
-                onEdit={handleEditClick}
-                onDelete={handleDelete}
-              />
-            </>
-          )}
-        </div>
-      </main>
+              <select
+                className="products-page__filter"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">Wszystkie kategorie</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+
+              <select className="products-page__sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <option value="name">Sortuj po nazwie</option>
+                <option value="kcalPer100">Sortuj po kaloriach</option>
+                <option value="proteins">Sortuj po białku</option>
+              </select>
+            </div>
+
+            <ProductList
+              products={filteredProducts}
+              isLoading={isLoading}
+              error={error}
+              onEdit={handleEditClick}
+              onDelete={handleDelete}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 };

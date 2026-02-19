@@ -57,6 +57,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
   const [looseProducts, setLooseProducts] = useState([]);
   const [productSearchTerm, setProductSearchTerm] = useState("");
   const [showProductDropdown, setShowProductDropdown] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize form with existing data when editing
   useEffect(() => {
@@ -205,7 +206,11 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
         product: product,
         weight: 100, // Default weight
       };
-      setLooseProducts((prev) => [...prev, newLooseProduct]);
+      setLooseProducts((prev) => {
+        const updated = [...prev, newLooseProduct];
+        console.log(`✅ Added loose product: "${product.name}" (Total: ${updated.length} products)`);
+        return updated;
+      });
       setShowProductDropdown(false);
       setProductSearchTerm("");
     }
@@ -358,61 +363,70 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
     console.log("📤 Submitting meal in day data:", submitData);
     console.log("📤 Loose products to save:", looseProducts);
+    console.log(`📊 Total loose products: ${looseProducts.length}`);
 
     try {
-      // Submit the meal plan first
+      setIsSubmitting(true);
+
       const result = await onSubmit(submitData);
 
-      // Get the dayId from the result or from formData (edit mode)
-      const dayId = result?.id || formData.id;
-
-      console.log("✅ Meal plan saved, dayId:", dayId);
-
-      if (!dayId) {
-        console.error("❌ No dayId available for loose products");
-        alert("Błąd: Nie udało się uzyskać ID planu dnia");
-        if (onError) onError(new Error("No dayId returned"));
-        return;
+      if (!result || !result.id) {
+        throw new Error("No ID returned from meal plan creation");
       }
 
-      // Save loose products if any
+      const dayId = result.id;
+      console.log("✅ Meal plan saved, dayId:", dayId);
+
+      // Save loose products
       if (looseProducts.length > 0) {
         console.log(`📤 Saving ${looseProducts.length} loose products for day ${dayId}`);
 
-        for (const lp of looseProducts) {
-          const looseProductData = {
-            dayId: dayId,
-            product: { id: lp.product.id },
-            weight: lp.weight,
-          };
+        let savedCount = 0;
+        let updatedCount = 0;
+        let createdCount = 0;
 
-          // If loose product has real ID, update it; otherwise create new
-          if (lp.id && typeof lp.id === "number") {
-            looseProductData.id = lp.id;
-            console.log("📤 Updating loose product:", looseProductData);
-            await looseProductInDayService.updateLooseProduct(looseProductData);
+        for (const lp of looseProducts) {
+          console.log(
+            `📤 [${savedCount + 1}/${looseProducts.length}] Processing: "${lp.product.name}" (${lp.weight}g)`,
+          );
+
+          if (lp.id) {
+            // UPDATE existing
+            console.log(`  ↻ Updating existing loose product (ID: ${lp.id})`);
+            await looseProductInDayService.updateLooseProductInDay({
+              id: lp.id,
+              dayId: dayId,
+              product: { id: lp.product.id },
+              weight: parseFloat(lp.weight),
+            });
+            updatedCount++;
           } else {
-            console.log("📤 Creating new loose product:", looseProductData);
-            await looseProductInDayService.createLooseProduct(looseProductData);
+            // CREATE new
+            console.log("  ✨ Creating new loose product");
+            await looseProductInDayService.createLooseProductInDay({
+              dayId: dayId,
+              product: { id: lp.product.id },
+              weight: parseFloat(lp.weight),
+            });
+            createdCount++;
           }
+          savedCount++;
+          console.log(`  ✅ Saved (${savedCount}/${looseProducts.length})`);
         }
 
-        console.log("✅ All loose products saved successfully");
+        console.log(
+          `🎉 All loose products saved! Created: ${createdCount}, Updated: ${updatedCount}, Total: ${savedCount}`,
+        );
+      } else {
+        console.log("ℹ️ No loose products to save");
       }
 
-      // Call success callback if provided
-      if (onSuccess) {
-        onSuccess();
-      }
+      onSuccess?.();
     } catch (error) {
       console.error("❌ Error in handleSubmit:", error);
-      // Call error callback if provided
-      if (onError) {
-        onError(error);
-      } else {
-        alert("Błąd podczas zapisywania planu dnia");
-      }
-      throw error;
+      onError?.(error.message || "Nie udało się utworzyć planu dnia");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -551,7 +565,13 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
       {/* Loose Products */}
       <div className="meal-in-day-form__section">
-        <h3 className="meal-in-day-form__section-title">🥗 Luźne produkty</h3>
+        <h3 className="meal-in-day-form__section-title">
+          🥗 Luźne produkty{" "}
+          {looseProducts.length > 0 && <span className="meal-in-day-form__count">({looseProducts.length})</span>}
+        </h3>
+        <p className="meal-in-day-form__hint">
+          Dodaj produkty spoza posiłków (przekąski, napoje, suplementy itp.). Możesz dodać wiele produktów.
+        </p>
 
         {/* Product Dropdown */}
         <div className="meal-in-day-form__product-search">
@@ -598,8 +618,9 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
         {/* Loose Products List */}
         {looseProducts.length > 0 && (
           <div className="meal-in-day-form__loose-products-list">
-            {looseProducts.map((lp) => (
+            {looseProducts.map((lp, index) => (
               <div key={lp.tempId} className="meal-in-day-form__loose-product-item">
+                <div className="meal-in-day-form__loose-product-number">{index + 1}</div>
                 <div className="meal-in-day-form__loose-product-info">
                   <span className="meal-in-day-form__loose-product-name">{lp.product.name}</span>
                   <span className="meal-in-day-form__loose-product-macros">
@@ -631,7 +652,16 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
             ))}
           </div>
         )}
-        {looseProducts.length === 0 && <p className="meal-in-day-form__empty-message">Nie dodano luźnych produktów</p>}
+        {looseProducts.length === 0 && (
+          <p className="meal-in-day-form__empty-message">
+            ➕ Nie dodano jeszcze żadnych luźnych produktów. Użyj wyszukiwarki powyżej, aby dodać pierwszy produkt.
+          </p>
+        )}
+        {looseProducts.length > 0 && (
+          <p className="meal-in-day-form__hint-add-more">
+            💡 Wskazówka: Możesz dodać kolejne produkty używając wyszukiwarki powyżej
+          </p>
+        )}
       </div>
 
       {/* Total Macros Preview */}
