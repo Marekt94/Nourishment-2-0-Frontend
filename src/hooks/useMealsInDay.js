@@ -32,22 +32,21 @@ const useMealsInDay = () => {
 
   /**
    * Create new meal in day
-   * Backend returns only {id}, so we merge it with sent data
+   * Backend returns only {id}, so we fetch full data after creation
    */
   const createMealInDay = useCallback(async (mealInDayData) => {
     try {
       setError(null);
-      console.log("📤 Creating meal in day with data:", mealInDayData);
       const response = await mealInDayService.createMealInDay(mealInDayData);
 
-      // Backend returns {id: integer}, merge with sent data
-      const newMealInDay = {
-        ...mealInDayData,
-        id: response.id,
-      };
+      // Backend returns {id: integer}, fetch full data from backend
+      const newId = response.id;
 
-      setMealsInDay((prev) => [...prev, newMealInDay]);
-      return newMealInDay;
+      // Fetch the complete meal in day data from backend
+      const fullMealInDay = await mealInDayService.getMealInDay(newId);
+
+      setMealsInDay((prev) => [...prev, fullMealInDay]);
+      return fullMealInDay;
     } catch (err) {
       console.error("❌ Error creating meal in day:", err);
       console.error("❌ Error response:", err.response?.data);
@@ -60,17 +59,19 @@ const useMealsInDay = () => {
 
   /**
    * Update existing meal in day
-   * Backend returns 200 with no body, so we use sent data
+   * Backend returns 200 with no body, so we fetch full data after update
    */
   const updateMealInDay = useCallback(async (mealInDayData) => {
     try {
       setError(null);
       await mealInDayService.updateMealInDay(mealInDayData);
 
-      // Backend returns no body, use sent data
-      setMealsInDay((prev) => prev.map((item) => (item.id === mealInDayData.id ? mealInDayData : item)));
+      // Backend returns no body, fetch full data from backend
+      const fullMealInDay = await mealInDayService.getMealInDay(mealInDayData.id);
 
-      return mealInDayData;
+      setMealsInDay((prev) => prev.map((item) => (item.id === mealInDayData.id ? fullMealInDay : item)));
+
+      return fullMealInDay;
     } catch (err) {
       console.error("Error updating meal in day:", err);
       const errorMsg = err.response?.data?.message || "Nie udało się zaktualizować planu dnia";

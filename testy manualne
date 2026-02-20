@@ -1,0 +1,13 @@
+#Do poprawienia
+##OPIS
+Po udanym dodaniu planu dnia, po rozwinieciu szczegółów widoncze sa tylko produkty luzne, posiłki sa puste, trzeba odswiezyc strone, wtedy potrawy sie wczytają
+##OCZEKIWANE ZACHOWNIE
+Po dodaniu planu dnia, wyszukaniu go na liscie i rozwinięciu szczegołów, potrawy poiwnny być wypełnione, kalorycznosc i makro powinno byc popranie wyliczone
+##OPIS
+Gdy plany zostana pobrane z bazy, wybrany plan z listy ma zla kalorycznosc (i prawdopdobnie makro) w widoku zwinietej zakladki, dopiero po rozwinieciu, kalorczynosc(i prawdopdobnie makro) poprawnie sie licza. Błąd dotyczy sytuacji, gdy sa tam luzne produkty, prawdopdobnie nie sa uwzlgednianie w logice liczenai makro przy zwnietej karcie
+##OCZEKIWANE ZACHOWANIE
+Makro i kalorycznosc powinny byc poprawnie pokazywane od poczatku
+##OPIS
+Podczas wylogowania, jakas dziwna dodatkowa strona logowania pojawia sie na chwile, jest ona calkowice zbedna.
+##OCZEKIWANE ROZWIAZANIE
+Ma sie pojawiac tylko glowana strona lgowoania (landing page), reszta powinna zostac usunieta z kodu i repo

@@ -20,27 +20,6 @@ export const useProducts = () => {
     setError(null);
     try {
       const data = await productService.getProducts();
-      console.log("🔍 useProducts - Raw data from backend:", data);
-      console.log("🔍 useProducts - First product raw:", data?.[0]);
-      console.log("🔍 useProducts - First product KEYS:", data?.[0] ? Object.keys(data[0]) : "No product");
-      console.log("🔍 useProducts - Total products:", data?.length);
-
-      // Log all values from first product
-      if (data?.[0]) {
-        const firstProduct = data[0];
-        console.log("🔬 Detailed first product analysis:");
-        console.log("  - id:", firstProduct.id);
-        console.log("  - name:", firstProduct.name);
-        console.log("  - kcalPer100:", firstProduct.kcalPer100, typeof firstProduct.kcalPer100);
-        console.log("  - proteins:", firstProduct.proteins, typeof firstProduct.proteins);
-        console.log("  - carbohydrates:", firstProduct.carbohydrates, typeof firstProduct.carbohydrates);
-        console.log("  - fat:", firstProduct.fat, typeof firstProduct.fat);
-        console.log("  - sugar:", firstProduct.sugar, typeof firstProduct.sugar);
-        console.log("  - sugarAndCarb:", firstProduct.sugarAndCarb, typeof firstProduct.sugarAndCarb);
-        console.log("  - fiber:", firstProduct.fiber, typeof firstProduct.fiber);
-        console.log("  - salt:", firstProduct.salt, typeof firstProduct.salt);
-        console.log("  - Complete object:", JSON.stringify(firstProduct, null, 2));
-      }
 
       // Check if data has zero values
       if (data && data.length > 0 && data[0]) {

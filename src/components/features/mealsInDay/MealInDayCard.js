@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { looseProductInDayService } from "../../../services/looseProductInDayService";
 import "./MealInDayCard.css";
 
@@ -13,15 +13,9 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
   const [looseProducts, setLooseProducts] = useState([]);
 
   /**
-   * Fetch loose products when card is expanded
+   * Fetch loose products from backend
    */
-  useEffect(() => {
-    if (isExpanded && mealInDay.id) {
-      fetchLooseProducts();
-    }
-  }, [isExpanded, mealInDay.id]);
-
-  const fetchLooseProducts = async () => {
+  const fetchLooseProducts = useCallback(async () => {
     try {
       const data = await looseProductInDayService.getLooseProductsByDay(mealInDay.id);
       setLooseProducts(data || []);
@@ -29,7 +23,17 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
       console.error("Error fetching loose products:", err);
       setLooseProducts([]);
     }
-  };
+  }, [mealInDay.id]);
+
+  /**
+   * Fetch loose products when component mounts or mealInDay changes
+   * This ensures macros are calculated correctly even in collapsed view
+   */
+  useEffect(() => {
+    if (mealInDay.id) {
+      fetchLooseProducts();
+    }
+  }, [mealInDay.id, fetchLooseProducts]);
 
   /**
    * Calculate total macros for all meals in the day
@@ -45,14 +49,11 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
       { meal: mealInDay.supper, factor: mealInDay.factorSupper || 1.0 },
     ];
 
-    console.log("📊 Calculating totals for:", mealInDay.name);
     let totals = { calories: 0, proteins: 0, carbs: 0, fats: 0 };
 
     // Add macros from meals
-    meals.forEach(({ meal, factor }, index) => {
-      console.log(`  Meal ${index + 1}:`, meal?.name || "empty", `Factor: ${factor}`);
+    meals.forEach(({ meal, factor }) => {
       if (meal?.productsInMeal && Array.isArray(meal.productsInMeal)) {
-        console.log(`    Products in meal:`, meal.productsInMeal.length);
         meal.productsInMeal.forEach((item) => {
           const weight = item.weight || 100;
           const product = item.product || {};
@@ -63,8 +64,6 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
           const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
           const fats = product.fatsPer100 || product.fat || 0;
 
-          console.log(`      ${product.name}: ${weight}g × ${factor} = ${(kcal * weight * factor) / 100} kcal`);
-
           totals.calories += (kcal * weight * factor) / 100;
           totals.proteins += (proteins * weight * factor) / 100;
           totals.carbs += (carbs * weight * factor) / 100;
@@ -74,14 +73,11 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
     });
 
     // Add macros from loose products
-    console.log(`  Loose products:`, looseProducts.length);
     looseProducts.forEach(({ product, weight }) => {
       const kcal = product.kcalPer100 || product.kcal || 0;
       const proteins = product.proteinsPer100 || product.proteins || 0;
       const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
       const fats = product.fatsPer100 || product.fat || 0;
-
-      console.log(`    ${product.name}: ${weight}g = ${(kcal * weight) / 100} kcal`);
 
       totals.calories += (kcal * weight) / 100;
       totals.proteins += (proteins * weight) / 100;
@@ -89,7 +85,6 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
       totals.fats += (fats * weight) / 100;
     });
 
-    console.log("📊 Final totals:", totals);
     return totals;
   };
 

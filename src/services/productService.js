@@ -18,8 +18,6 @@ const productService = {
   async getProducts() {
     try {
       const response = await api.get("/products");
-      console.log("📡 productService - Response data:", response.data);
-      console.log("📡 productService - First product:", response.data?.[0]);
       return response.data;
     } catch (error) {
       console.error("Get products error:", error);

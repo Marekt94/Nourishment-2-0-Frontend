@@ -17,7 +17,6 @@ const categoryService = {
   async getCategories() {
     try {
       const response = await api.get("/categories");
-      console.log("📂 categoryService - Categories fetched:", response.data);
       return response.data;
     } catch (error) {
       console.error("Get categories error:", error);

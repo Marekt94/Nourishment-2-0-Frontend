@@ -33,8 +33,6 @@ export const MealList = ({ meals, isLoading, error, onEdit, onDelete }) => {
     );
   }
 
-  console.log("📦 MealList rendering", meals.length, "meals");
-
   return (
     <div className="meal-list">
       {meals.map((meal) => (

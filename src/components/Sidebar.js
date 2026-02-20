@@ -19,7 +19,7 @@ export const Sidebar = () => {
 
   const handleLogout = () => {
     authService.logout();
-    navigate("/login");
+    // Don't navigate - authService.logout() already redirects to "/"
     setIsOpen(false);
   };
 

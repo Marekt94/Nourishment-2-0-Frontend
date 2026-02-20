@@ -17,7 +17,6 @@ const mealService = {
   async getMeals() {
     try {
       const response = await api.get("/meals");
-      console.log("🍽️ mealService - Meals fetched:", response.data);
       return response.data;
     } catch (error) {
       console.error("Get meals error:", error);

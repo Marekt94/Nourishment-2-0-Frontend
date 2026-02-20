@@ -19,8 +19,6 @@ export const useMeals = () => {
     setError(null);
     try {
       const data = await mealService.getMeals();
-      console.log("🍽️ useMeals - Raw data from backend:", data);
-      console.log("🍽️ useMeals - Total meals:", data?.length);
 
       setMeals(data || []);
     } catch (err) {

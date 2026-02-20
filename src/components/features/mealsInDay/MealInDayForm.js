@@ -12,7 +12,14 @@ import "./MealInDayForm.css";
  * - mealInDay: Object (optional) - MealInDay to edit
  * - onSubmit: Function - Called with form data on submit, should return {id} or promise
  * - onCancel: Function - Called when user cancels
- * - onSuccess: Function (optional) - Called after successful save including loose products
+ * - onSuccess            <input
+              type="text"
+              placeholder="🔍 Szukaj produktu do dodania..."
+              value={productSearchTerm}
+              onChange={(e) => setProductSearchTerm(e.target.value)}
+              onFocus={() => setShowProductDropdown(true)}
+              className="meal-in-day-form__search-input"
+            />(optional) - Called after successful save including loose products
  * - onError: Function (optional) - Called if save fails
  * - isLoading: Boolean - Shows loading state
  */
@@ -121,9 +128,8 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
         weight: lp.weight,
       }));
       setLooseProducts(formattedLooseProducts);
-      console.log("📥 Loaded loose products for editing:", formattedLooseProducts);
     } catch (err) {
-      console.log("Error loading loose products:", err);
+      console.error("Error loading loose products:", err);
       setLooseProducts([]);
     }
   };
@@ -206,11 +212,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
         product: product,
         weight: 100, // Default weight
       };
-      setLooseProducts((prev) => {
-        const updated = [...prev, newLooseProduct];
-        console.log(`✅ Added loose product: "${product.name}" (Total: ${updated.length} products)`);
-        return updated;
-      });
+      setLooseProducts((prev) => [...prev, newLooseProduct]);
       setShowProductDropdown(false);
       setProductSearchTerm("");
     }
@@ -222,9 +224,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     // If it has a real ID, delete it from the backend
     if (productToRemove && productToRemove.id && typeof productToRemove.id === "number") {
       try {
-        console.log("🗑️ Deleting loose product from backend:", productToRemove.id);
         await looseProductInDayService.deleteLooseProduct(productToRemove.id);
-        console.log("✅ Loose product deleted successfully");
       } catch (err) {
         console.error("❌ Error deleting loose product:", err);
         alert("Błąd podczas usuwania produktu");
@@ -245,8 +245,11 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
   const getFilteredProducts = () => {
     const searchTerm = productSearchTerm.toLowerCase();
-    if (!searchTerm) return products;
-    return products.filter((product) => product.name?.toLowerCase().includes(searchTerm));
+    const filtered = !searchTerm
+      ? products
+      : products.filter((product) => product.name?.toLowerCase().includes(searchTerm));
+
+    return filtered;
   };
 
   const calculateTotalMacros = () => {
@@ -263,6 +266,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     const mealTotals = mealSlots.reduce(
       (totals, { meal: mealId, factor }) => {
         if (!mealId) return totals;
+
         const meal = meals.find((m) => m.id === mealId);
         if (!meal?.productsInMeal) return totals;
 
@@ -270,11 +274,17 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
           (sum, item) => {
             const weight = item.weight || 100;
             const product = item.product || {};
+
+            const kcal = product.kcalPer100 || product.kcal || 0;
+            const proteins = product.proteinsPer100 || product.proteins || 0;
+            const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
+            const fats = product.fatsPer100 || product.fat || 0;
+
             return {
-              calories: sum.calories + ((product.kcalPer100 || 0) * weight) / 100,
-              proteins: sum.proteins + ((product.proteinsPer100 || 0) * weight) / 100,
-              carbs: sum.carbs + ((product.carbohydratesPer100 || 0) * weight) / 100,
-              fats: sum.fats + ((product.fatsPer100 || 0) * weight) / 100,
+              calories: sum.calories + (kcal * weight) / 100,
+              proteins: sum.proteins + (proteins * weight) / 100,
+              carbs: sum.carbs + (carbs * weight) / 100,
+              fats: sum.fats + (fats * weight) / 100,
             };
           },
           { calories: 0, proteins: 0, carbs: 0, fats: 0 },
@@ -293,11 +303,16 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     // Add macros from loose products
     const looseProductTotals = looseProducts.reduce(
       (totals, { product, weight }) => {
+        const kcal = product.kcalPer100 || product.kcal || 0;
+        const proteins = product.proteinsPer100 || product.proteins || 0;
+        const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
+        const fats = product.fatsPer100 || product.fat || 0;
+
         return {
-          calories: totals.calories + ((product.kcalPer100 || 0) * weight) / 100,
-          proteins: totals.proteins + ((product.proteinsPer100 || product.proteins || 0) * weight) / 100,
-          carbs: totals.carbs + ((product.carbohydratesPer100 || product.carbohydrates || 0) * weight) / 100,
-          fats: totals.fats + ((product.fatsPer100 || product.fat || 0) * weight) / 100,
+          calories: totals.calories + (kcal * weight) / 100,
+          proteins: totals.proteins + (proteins * weight) / 100,
+          carbs: totals.carbs + (carbs * weight) / 100,
+          fats: totals.fats + (fats * weight) / 100,
         };
       },
       { calories: 0, proteins: 0, carbs: 0, fats: 0 },
@@ -361,10 +376,6 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     if (formData.dinner) submitData.dinner = { id: formData.dinner };
     if (formData.supper) submitData.supper = { id: formData.supper };
 
-    console.log("📤 Submitting meal in day data:", submitData);
-    console.log("📤 Loose products to save:", looseProducts);
-    console.log(`📊 Total loose products: ${looseProducts.length}`);
-
     try {
       setIsSubmitting(true);
 
@@ -375,50 +386,27 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       }
 
       const dayId = result.id;
-      console.log("✅ Meal plan saved, dayId:", dayId);
 
       // Save loose products
       if (looseProducts.length > 0) {
-        console.log(`📤 Saving ${looseProducts.length} loose products for day ${dayId}`);
-
-        let savedCount = 0;
-        let updatedCount = 0;
-        let createdCount = 0;
-
         for (const lp of looseProducts) {
-          console.log(
-            `📤 [${savedCount + 1}/${looseProducts.length}] Processing: "${lp.product.name}" (${lp.weight}g)`,
-          );
-
           if (lp.id) {
             // UPDATE existing
-            console.log(`  ↻ Updating existing loose product (ID: ${lp.id})`);
             await looseProductInDayService.updateLooseProductInDay({
               id: lp.id,
               dayId: dayId,
               product: { id: lp.product.id },
               weight: parseFloat(lp.weight),
             });
-            updatedCount++;
           } else {
             // CREATE new
-            console.log("  ✨ Creating new loose product");
             await looseProductInDayService.createLooseProductInDay({
               dayId: dayId,
               product: { id: lp.product.id },
               weight: parseFloat(lp.weight),
             });
-            createdCount++;
           }
-          savedCount++;
-          console.log(`  ✅ Saved (${savedCount}/${looseProducts.length})`);
         }
-
-        console.log(
-          `🎉 All loose products saved! Created: ${createdCount}, Updated: ${updatedCount}, Total: ${savedCount}`,
-        );
-      } else {
-        console.log("ℹ️ No loose products to save");
       }
 
       onSuccess?.();

@@ -14,12 +14,9 @@ export const authService = {
    * Response: { token: string, user?: object }
    */
   async login(username, password) {
-    console.log("🔍 authService.login called with:", { username, password: password ? "***" : undefined });
-
     try {
       // Try main login endpoint first with username format
       const requestBody = { login: username, password };
-      console.log("📤 Sending request to /login:", { ...requestBody, password: "***" });
 
       const response = await api.post("/login", requestBody);
 

@@ -26,12 +26,6 @@ export const LandingPage = () => {
     setIsLoading(true);
     setError(null);
 
-    console.log("🔍 LandingPage handleSubmit - formData:", formData);
-    console.log("📤 Calling authService.login with:", {
-      username: formData.username,
-      password: formData.password ? "***" : undefined,
-    });
-
     try {
       await authService.login(formData.username, formData.password);
       alert("Zalogowano pomyślnie!");

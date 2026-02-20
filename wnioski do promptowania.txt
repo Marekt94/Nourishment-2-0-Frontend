@@ -3,3 +3,4 @@ Tworzenie komunikacji z backendem:
 - powinien uruchamiac backend i forntend sam
 
 - przy sprawdzaniu jaki powinien byc request zapomina o danych z instrukcji (ze ma sprawdzac w swaggerze)
+- podczas tworzenia pliku z problemami zauwazonymi w testach manualnych trzeba dac mu inormacje, zeby nie nadpisywal tego pliku, albo dac mu jasny znak, co ma z nimi robic, bo go nadpisze, a potem ma problem z odzczytaniem nowych wynikow testow, probuje wczytac ten plik jeszcze raz poprzez wywolanie komend i dziala to dlugo
