@@ -85,6 +85,7 @@ swagger/
    - Parameter names and types from API implementation
 
 3. **Always add backend references in comments:**
+4. **Do not add comments in code until it is clearly written**
 
 ```javascript
 /**

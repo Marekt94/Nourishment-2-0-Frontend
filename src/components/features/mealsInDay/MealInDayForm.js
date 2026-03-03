@@ -152,10 +152,25 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    const newValue = type === "checkbox" ? checked : value;
+
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: newValue };
+
+      // When switching modes, clear the hidden meal slot
+      if (name === "for5Days") {
+        if (newValue) {
+          // Switching to 5-day: clear lunch
+          updated.lunch = null;
+        } else {
+          // Switching to 4-day: clear dinner and afternoonSnack
+          updated.dinner = null;
+          updated.afternoonSnack = null;
+        }
+      }
+
+      return updated;
+    });
   };
 
   const handleFactorChange = (mealSlot, value) => {
@@ -257,8 +272,8 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       { meal: formData.breakfast, factor: formData.factorBreakfast },
       { meal: formData.secondBreakfast, factor: formData.factorSecondBreakfast },
       { meal: formData.lunch, factor: formData.factorLunch },
-      { meal: formData.afternoonSnack, factor: formData.factorAfternoonSnack },
       { meal: formData.dinner, factor: formData.factorDinner },
+      { meal: formData.afternoonSnack, factor: formData.factorAfternoonSnack },
       { meal: formData.supper, factor: formData.factorSupper },
     ];
 
@@ -336,17 +351,8 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       return;
     }
 
-    // Validate all 6 meals are selected
-    const requiredMeals = [
-      { key: "breakfast", label: "Śniadanie" },
-      { key: "secondBreakfast", label: "Drugie śniadanie" },
-      { key: "lunch", label: "Obiad" },
-      { key: "afternoonSnack", label: "Podwieczorek" },
-      { key: "dinner", label: "Kolacja" },
-      { key: "supper", label: "Kolacja II" },
-    ];
-
-    const missingMeals = requiredMeals.filter((meal) => !formData[meal.key]);
+    // Validate only visible meal slots are filled
+    const missingMeals = mealSlots.filter((slot) => !formData[slot.key]);
     if (missingMeals.length > 0) {
       const missingLabels = missingMeals.map((m) => m.label).join(", ");
       alert(`Proszę wybrać posiłki dla: ${missingLabels}`);
@@ -368,24 +374,36 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       factorSupper: formData.factorSupper,
     };
 
-    // Only add meal fields if they are selected
+    // Include only selected meals as {id} objects.
+    // Hidden slots (per 4-day / 5-day rules) are omitted from the request entirely.
     if (formData.breakfast) submitData.breakfast = { id: formData.breakfast };
     if (formData.secondBreakfast) submitData.secondBreakfast = { id: formData.secondBreakfast };
-    if (formData.lunch) submitData.lunch = { id: formData.lunch };
-    if (formData.afternoonSnack) submitData.afternoonSnack = { id: formData.afternoonSnack };
-    if (formData.dinner) submitData.dinner = { id: formData.dinner };
     if (formData.supper) submitData.supper = { id: formData.supper };
+
+    if (formData.for5Days) {
+      // 5-day mode: lunch hidden — omit; send dinner + afternoonSnack
+      if (formData.dinner) submitData.dinner = { id: formData.dinner };
+      if (formData.afternoonSnack) submitData.afternoonSnack = { id: formData.afternoonSnack };
+    } else {
+      // 4-day mode: dinner + afternoonSnack hidden — omit; send lunch
+      if (formData.lunch) submitData.lunch = { id: formData.lunch };
+    }
+
+    const isEdit = !!formData.id;
+    console.log(`📤 [MealInDayForm] ${isEdit ? "PUT" : "POST"} /mealsinday`, JSON.stringify(submitData, null, 2));
 
     try {
       setIsSubmitting(true);
 
       const result = await onSubmit(submitData);
+      console.log(`✅ [MealInDayForm] Response:`, result);
 
-      if (!result || !result.id) {
-        throw new Error("No ID returned from meal plan creation");
+      // For create: backend returns {id}; for update: hook returns full object with id
+      const dayId = result?.id ?? formData.id;
+
+      if (!dayId) {
+        throw new Error("Brak ID planu dnia po zapisaniu");
       }
-
-      const dayId = result.id;
 
       // Save loose products
       if (looseProducts.length > 0) {
@@ -420,14 +438,23 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
   const totalMacros = calculateTotalMacros();
 
-  const mealSlots = [
-    { key: "breakfast", label: "🌅 Śniadanie", factorKey: "factorBreakfast" },
-    { key: "secondBreakfast", label: "🥐 Drugie śniadanie", factorKey: "factorSecondBreakfast" },
-    { key: "lunch", label: "🍽️ Obiad", factorKey: "factorLunch" },
-    { key: "afternoonSnack", label: "☕ Podwieczorek", factorKey: "factorAfternoonSnack" },
-    { key: "dinner", label: "🥘 Kolacja", factorKey: "factorDinner" },
-    { key: "supper", label: "🌙 Kolacja II", factorKey: "factorSupper" },
+  // Meal slots visibility depends on for5Days flag:
+  // 5-day mode: no lunch (lunch slot hidden, cleared)
+  // 4-day mode (default): no secondBreakfast slot for lunch, instead lunch available; afternoonSnack hidden
+  const allMealSlots = [
+    { key: "breakfast", label: "🌅 Śniadanie", factorKey: "factorBreakfast", hiddenWhen: null },
+    { key: "secondBreakfast", label: "🥐 Drugie śniadanie", factorKey: "factorSecondBreakfast", hiddenWhen: null },
+    { key: "lunch", label: "🍽️ Lunch", factorKey: "factorLunch", hiddenWhen: "5days" },
+    { key: "dinner", label: "🥘 Obiad", factorKey: "factorDinner", hiddenWhen: "4days" },
+    { key: "afternoonSnack", label: "☕ Podwieczorek", factorKey: "factorAfternoonSnack", hiddenWhen: "4days" },
+    { key: "supper", label: "🌙 Kolacja", factorKey: "factorSupper", hiddenWhen: null },
   ];
+
+  const mealSlots = allMealSlots.filter(({ hiddenWhen }) => {
+    if (hiddenWhen === "5days" && formData.for5Days) return false;
+    if (hiddenWhen === "4days" && !formData.for5Days) return false;
+    return true;
+  });
 
   return (
     <form className="meal-in-day-form" onSubmit={handleSubmit}>
