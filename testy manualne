@@ -11,3 +11,7 @@ Makro i kalorycznosc powinny byc poprawnie pokazywane od poczatku
 Podczas wylogowania, jakas dziwna dodatkowa strona logowania pojawia sie na chwile, jest ona calkowice zbedna.
 ##OCZEKIWANE ROZWIAZANIE
 Ma sie pojawiac tylko glowana strona lgowoania (landing page), reszta powinna zostac usunieta z kodu i repo
+##OPIS
+W karcie rozwijanej ciagle widoczne sa wszystkie potrawy mimo, ze jest to np 4dniowa dieta
+##OCZEKIWANE ROZWIĄZANIE
+Wiodczne tylko potrawy zgodne z tym co powinno byc widoczne na 5 albo na 4 dni
