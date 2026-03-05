@@ -72,6 +72,29 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
             <span className="meal-card__macro-value">{Math.round(macros.fat)}g</span>
           </div>
 
+          <div className="meal-card__compact-actions">
+            <button
+              className="meal-card__button meal-card__button--edit"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(meal);
+              }}
+              title="Edytuj posiłek"
+            >
+              ✏️
+            </button>
+            <button
+              className="meal-card__button meal-card__button--delete"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+              title="Usuń posiłek"
+            >
+              🗑️
+            </button>
+          </div>
+
           <button
             className="meal-card__expand-btn"
             onClick={(e) => {
@@ -142,27 +165,6 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
                 <span className="meal-card__detail-value">{Math.round(macros.fat)}g</span>
               </div>
             </div>
-          </div>
-
-          <div className="meal-card__actions">
-            <button
-              className="meal-card__button meal-card__button--edit"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(meal);
-              }}
-            >
-              Edytuj
-            </button>
-            <button
-              className="meal-card__button meal-card__button--delete"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete();
-              }}
-            >
-              Usuń
-            </button>
           </div>
         </div>
       )}

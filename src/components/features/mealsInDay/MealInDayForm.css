@@ -214,6 +214,12 @@
   font-weight: 600;
 }
 
+.meal-in-day-form__dropdown-item--highlighted {
+  background: #fef3c7;
+  outline: 2px solid #f59e0b;
+  outline-offset: -2px;
+}
+
 .meal-in-day-form__dropdown-empty {
   padding: 1rem;
   text-align: center;

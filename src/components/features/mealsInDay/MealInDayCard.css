@@ -356,6 +356,23 @@
   justify-content: flex-end;
 }
 
+.meal-in-day-card__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.meal-in-day-card__header-actions .meal-in-day-card__button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .meal-in-day-card__button {
   padding: 10px 20px;
   border: none;

@@ -67,6 +67,23 @@
   flex-shrink: 0;
 }
 
+.meal-card__compact-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.meal-card__compact-actions .meal-card__button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .meal-card__macro-compact {
   display: flex;
   flex-direction: column;

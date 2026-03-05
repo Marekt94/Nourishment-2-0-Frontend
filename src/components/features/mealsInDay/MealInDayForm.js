@@ -3,7 +3,6 @@ import { useMeals } from "../../../hooks/useMeals";
 import { useProducts } from "../../../hooks/useProducts";
 import { looseProductInDayService } from "../../../services/looseProductInDayService";
 import "./MealInDayForm.css";
-
 /**
  * MealInDayForm Component
  * Form for creating/editing daily meal plans
@@ -59,11 +58,14 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
   // Dropdown visibility states
   const [openDropdown, setOpenDropdown] = useState(null);
+  // Index of highlighted item in dropdown (-1 = none)
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   // Loose products state
   const [looseProducts, setLooseProducts] = useState([]);
   const [productSearchTerm, setProductSearchTerm] = useState("");
   const [showProductDropdown, setShowProductDropdown] = useState(false);
+  const [highlightedProductIndex, setHighlightedProductIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize form with existing data when editing
@@ -173,20 +175,13 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     });
   };
 
-  const handleFactorChange = (mealSlot, value) => {
-    const numValue = parseFloat(value) || 1.0;
-    setFormData((prev) => ({
-      ...prev,
-      [mealSlot]: Math.max(0.1, Math.min(10, numValue)), // Limit between 0.1 and 10
-    }));
-  };
-
   const handleMealSelect = (mealSlot, mealId) => {
     setFormData((prev) => ({
       ...prev,
       [mealSlot]: mealId,
     }));
     setOpenDropdown(null);
+    setHighlightedIndex(0);
     setSearchTerms((prev) => ({ ...prev, [mealSlot]: "" }));
   };
 
@@ -199,10 +194,44 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
   const handleSearchChange = (mealSlot, value) => {
     setSearchTerms((prev) => ({ ...prev, [mealSlot]: value }));
+    setHighlightedIndex(0); // reset highlight on new search
   };
 
   const toggleDropdown = (mealSlot) => {
-    setOpenDropdown(openDropdown === mealSlot ? null : mealSlot);
+    const next = openDropdown === mealSlot ? null : mealSlot;
+    setOpenDropdown(next);
+    setHighlightedIndex(0);
+  };
+
+  const openNextSlot = (currentKey) => {
+    const currentIdx = mealSlots.findIndex((s) => s.key === currentKey);
+    const nextSlot = mealSlots[currentIdx + 1];
+    if (nextSlot) {
+      setOpenDropdown(nextSlot.key);
+      setHighlightedIndex(0);
+    } else {
+      setOpenDropdown(null);
+    }
+  };
+
+  const handleDropdownKeyDown = (e, mealSlot) => {
+    const filtered = getFilteredMeals(mealSlot);
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => Math.min(prev + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (filtered[highlightedIndex]) {
+        handleMealSelect(mealSlot, filtered[highlightedIndex].id);
+        openNextSlot(mealSlot);
+      }
+    } else if (e.key === "Escape" || e.key === "Tab") {
+      e.preventDefault();
+      openNextSlot(mealSlot);
+    }
   };
 
   const getFilteredMeals = (mealSlot) => {
@@ -230,6 +259,25 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       setLooseProducts((prev) => [...prev, newLooseProduct]);
       setShowProductDropdown(false);
       setProductSearchTerm("");
+      setHighlightedProductIndex(0);
+    }
+  };
+
+  const handleProductSearchKeyDown = (e) => {
+    const filtered = getFilteredProducts();
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedProductIndex((prev) => Math.min(prev + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedProductIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (filtered[highlightedProductIndex]) {
+        handleAddLooseProduct(filtered[highlightedProductIndex].id);
+      }
+    } else if (e.key === "Escape") {
+      setShowProductDropdown(false);
     }
   };
 
@@ -290,10 +338,10 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
             const weight = item.weight || 100;
             const product = item.product || {};
 
-            const kcal = product.kcalPer100 || product.kcal || 0;
-            const proteins = product.proteinsPer100 || product.proteins || 0;
-            const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
-            const fats = product.fatsPer100 || product.fat || 0;
+            const kcal = product.kcalPer100 || 0;
+            const proteins = product.proteins || 0;
+            const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+            const fats = product.fat || 0;
 
             return {
               calories: sum.calories + (kcal * weight) / 100,
@@ -318,10 +366,10 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     // Add macros from loose products
     const looseProductTotals = looseProducts.reduce(
       (totals, { product, weight }) => {
-        const kcal = product.kcalPer100 || product.kcal || 0;
-        const proteins = product.proteinsPer100 || product.proteins || 0;
-        const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
-        const fats = product.fatsPer100 || product.fat || 0;
+        const kcal = product.kcalPer100 || 0;
+        const proteins = product.proteins || 0;
+        const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+        const fats = product.fat || 0;
 
         return {
           calories: totals.calories + (kcal * weight) / 100,
@@ -359,19 +407,17 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       return;
     }
 
-    // Prepare data for backend
-    // Backend expects meal references as objects with just {id}
-    // Only include meals that are actually selected (not null)
+    // Factors are always 1.0 — feature not yet used on backend
     const submitData = {
       ...(formData.id && { id: formData.id }),
       name: formData.name.trim(),
       for5Days: formData.for5Days,
-      factorBreakfast: formData.factorBreakfast,
-      factorSecondBreakfast: formData.factorSecondBreakfast,
-      factorLunch: formData.factorLunch,
-      factorAfternoonSnack: formData.factorAfternoonSnack,
-      factorDinner: formData.factorDinner,
-      factorSupper: formData.factorSupper,
+      factorBreakfast: 1.0,
+      factorSecondBreakfast: 1.0,
+      factorLunch: 1.0,
+      factorAfternoonSnack: 1.0,
+      factorDinner: 1.0,
+      factorSupper: 1.0,
     };
 
     // Include only selected meals as {id} objects.
@@ -489,6 +535,18 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                 name="for5Days"
                 checked={formData.for5Days}
                 onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Tab" && !e.shiftKey) {
+                    e.preventDefault();
+                    // Open breakfast dropdown and focus its search input
+                    const firstSlotKey = mealSlots[0]?.key;
+                    if (firstSlotKey) {
+                      setOpenDropdown(firstSlotKey);
+                      setHighlightedIndex(0);
+                      // autoFocus on the dropdown search input handles the rest
+                    }
+                  }
+                }}
                 className="meal-in-day-form__checkbox"
               />
               <span>📅 Plan na 5 dni</span>
@@ -513,7 +571,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                   {/* Meal Selector */}
                   <div className="meal-in-day-form__meal-selector" ref={openDropdown === key ? dropdownRef : null}>
                     <div className="meal-in-day-form__selected-meal" onClick={() => toggleDropdown(key)}>
-                      {getSelectedMealName(key) || "Wybierz posiłek..."}
+                      {getSelectedMealName(key) || "🍽️ Wybierz posiłek..."}
                       <span className="meal-in-day-form__dropdown-arrow">▼</span>
                     </div>
 
@@ -534,19 +592,22 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                           placeholder="🔍 Szukaj..."
                           value={searchTerms[key]}
                           onChange={(e) => handleSearchChange(key, e.target.value)}
+                          onKeyDown={(e) => handleDropdownKeyDown(e, key)}
                           className="meal-in-day-form__dropdown-search"
                           onClick={(e) => e.stopPropagation()}
+                          autoFocus
                         />
                         <div className="meal-in-day-form__dropdown-list">
                           {getFilteredMeals(key).length === 0 ? (
                             <div className="meal-in-day-form__dropdown-empty">Brak posiłków</div>
                           ) : (
-                            getFilteredMeals(key).map((meal) => (
+                            getFilteredMeals(key).map((meal, idx) => (
                               <div
                                 key={meal.id}
                                 className={`meal-in-day-form__dropdown-item ${
                                   formData[key] === meal.id ? "meal-in-day-form__dropdown-item--selected" : ""
-                                }`}
+                                } ${idx === highlightedIndex ? "meal-in-day-form__dropdown-item--highlighted" : ""}`}
+                                onMouseEnter={() => setHighlightedIndex(idx)}
                                 onClick={() => handleMealSelect(key, meal.id)}
                               >
                                 {meal.name}
@@ -556,20 +617,6 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                         </div>
                       </div>
                     )}
-                  </div>
-
-                  {/* Factor Input */}
-                  <div className="meal-in-day-form__factor">
-                    <label className="meal-in-day-form__factor-label">×</label>
-                    <input
-                      type="number"
-                      min="0.1"
-                      max="10"
-                      step="0.1"
-                      value={formData[factorKey]}
-                      onChange={(e) => handleFactorChange(factorKey, e.target.value)}
-                      className="meal-in-day-form__factor-input"
-                    />
                   </div>
                 </div>
               </div>
@@ -595,8 +642,12 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
               type="text"
               placeholder="🔍 Szukaj produktu do dodania..."
               value={productSearchTerm}
-              onChange={(e) => setProductSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setProductSearchTerm(e.target.value);
+                setHighlightedProductIndex(0);
+              }}
               onFocus={() => setShowProductDropdown(true)}
+              onKeyDown={handleProductSearchKeyDown}
               className="meal-in-day-form__search-input"
             />
             {showProductDropdown && (
@@ -611,10 +662,13 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                       Brak produktów
                     </div>
                   ) : (
-                    getFilteredProducts().map((product) => (
+                    getFilteredProducts().map((product, idx) => (
                       <div
                         key={product.id}
-                        className="meal-in-day-form__dropdown-item"
+                        className={`meal-in-day-form__dropdown-item ${
+                          idx === highlightedProductIndex ? "meal-in-day-form__dropdown-item--highlighted" : ""
+                        }`}
+                        onMouseEnter={() => setHighlightedProductIndex(idx)}
                         onClick={() => handleAddLooseProduct(product.id)}
                       >
                         {product.name}
@@ -640,9 +694,9 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                   <span className="meal-in-day-form__loose-product-name">{lp.product.name}</span>
                   <span className="meal-in-day-form__loose-product-macros">
                     {(((lp.product.kcalPer100 || 0) * lp.weight) / 100).toFixed(0)} kcal | B:{" "}
-                    {(((lp.product.proteinsPer100 || lp.product.proteins || 0) * lp.weight) / 100).toFixed(1)}g | W:{" "}
-                    {(((lp.product.carbohydratesPer100 || lp.product.carbohydrates || 0) * lp.weight) / 100).toFixed(1)}
-                    g | T: {(((lp.product.fatsPer100 || lp.product.fat || 0) * lp.weight) / 100).toFixed(1)}g
+                    {(((lp.product.proteins || 0) * lp.weight) / 100).toFixed(1)}g | W:{" "}
+                    {(((lp.product.carbohydrates || lp.product.sugarAndCarb || 0) * lp.weight) / 100).toFixed(1)}g | T:{" "}
+                    {(((lp.product.fat || 0) * lp.weight) / 100).toFixed(1)}g
                   </span>
                 </div>
                 <div className="meal-in-day-form__loose-product-controls">
@@ -715,9 +769,9 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
         <button
           type="submit"
           className="meal-in-day-form__button meal-in-day-form__button--submit"
-          disabled={isLoading || mealsLoading}
+          disabled={isLoading || mealsLoading || isSubmitting}
         >
-          {isLoading ? "Zapisywanie..." : mealInDay ? "Zaktualizuj" : "Utwórz"}
+          {isLoading || isSubmitting ? "Zapisywanie..." : mealInDay ? "Zaktualizuj" : "Utwórz"}
         </button>
       </div>
     </form>

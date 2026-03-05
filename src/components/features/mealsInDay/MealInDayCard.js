@@ -58,11 +58,10 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
           const weight = item.weight || 100;
           const product = item.product || {};
 
-          // Support both field naming conventions
-          const kcal = product.kcalPer100 || product.kcal || 0;
-          const proteins = product.proteinsPer100 || product.proteins || 0;
-          const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
-          const fats = product.fatsPer100 || product.fat || 0;
+          const kcal = product.kcalPer100 || 0;
+          const proteins = product.proteins || 0;
+          const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+          const fats = product.fat || 0;
 
           totals.calories += (kcal * weight * factor) / 100;
           totals.proteins += (proteins * weight * factor) / 100;
@@ -74,10 +73,10 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
 
     // Add macros from loose products
     looseProducts.forEach(({ product, weight }) => {
-      const kcal = product.kcalPer100 || product.kcal || 0;
-      const proteins = product.proteinsPer100 || product.proteins || 0;
-      const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
-      const fats = product.fatsPer100 || product.fat || 0;
+      const kcal = product.kcalPer100 || 0;
+      const proteins = product.proteins || 0;
+      const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+      const fats = product.fat || 0;
 
       totals.calories += (kcal * weight) / 100;
       totals.proteins += (proteins * weight) / 100;
@@ -113,10 +112,10 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
         const weight = item.weight || 100;
         const product = item.product || {};
 
-        const kcal = product.kcalPer100 || product.kcal || 0;
-        const proteins = product.proteinsPer100 || product.proteins || 0;
-        const carbs = product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0;
-        const fats = product.fatsPer100 || product.fat || 0;
+        const kcal = product.kcalPer100 || 0;
+        const proteins = product.proteins || 0;
+        const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+        const fats = product.fat || 0;
 
         mealMacros.calories += (kcal * weight * factor) / 100;
         mealMacros.proteins += (proteins * weight * factor) / 100;
@@ -191,6 +190,24 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
               <span className="meal-in-day-card__summary-value">{safeMacros.fats.toFixed(1)}g</span>
             </div>
           </div>
+
+          <div className="meal-in-day-card__header-actions" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => onEdit(mealInDay)}
+              className="meal-in-day-card__button meal-in-day-card__button--edit"
+              title="Edytuj"
+            >
+              ✏️
+            </button>
+            <button
+              onClick={() => onDelete(mealInDay.id)}
+              className="meal-in-day-card__button meal-in-day-card__button--delete"
+              title="Usuń"
+            >
+              🗑️
+            </button>
+          </div>
+
           <div className="meal-in-day-card__expand-icon">{isExpanded ? "▲" : "▼"}</div>
         </div>
       </div>
@@ -203,10 +220,11 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
             <h4>Posiłki:</h4>
             {renderMeal("🌅 Śniadanie", mealInDay.breakfast, mealInDay.factorBreakfast)}
             {renderMeal("🥐 Drugie śniadanie", mealInDay.secondBreakfast, mealInDay.factorSecondBreakfast)}
-            {renderMeal("🍽️ Obiad", mealInDay.lunch, mealInDay.factorLunch)}
-            {renderMeal("☕ Podwieczorek", mealInDay.afternoonSnack, mealInDay.factorAfternoonSnack)}
-            {renderMeal("🥘 Kolacja", mealInDay.dinner, mealInDay.factorDinner)}
-            {renderMeal("🌙 Kolacja II", mealInDay.supper, mealInDay.factorSupper)}
+            {!mealInDay.for5Days && renderMeal("🍽️ Lunch", mealInDay.lunch, mealInDay.factorLunch)}
+            {mealInDay.for5Days && renderMeal("🥘 Obiad", mealInDay.dinner, mealInDay.factorDinner)}
+            {mealInDay.for5Days &&
+              renderMeal("☕ Podwieczorek", mealInDay.afternoonSnack, mealInDay.factorAfternoonSnack)}
+            {renderMeal("🌙 Kolacja", mealInDay.supper, mealInDay.factorSupper)}
           </div>
 
           {/* Loose Products */}
@@ -216,11 +234,10 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
               {looseProducts.map((lp) => {
                 const product = lp.product;
                 const weight = lp.weight;
-                const kcal = ((product.kcalPer100 || product.kcal || 0) * weight) / 100;
-                const proteins = ((product.proteinsPer100 || product.proteins || 0) * weight) / 100;
-                const carbs =
-                  ((product.carbohydratesPer100 || product.carbohydrates || product.sugarAndCarb || 0) * weight) / 100;
-                const fats = ((product.fatsPer100 || product.fat || 0) * weight) / 100;
+                const kcal = ((product.kcalPer100 || 0) * weight) / 100;
+                const proteins = ((product.proteins || 0) * weight) / 100;
+                const carbs = ((product.carbohydrates || product.sugarAndCarb || 0) * weight) / 100;
+                const fats = ((product.fat || 0) * weight) / 100;
 
                 return (
                   <div key={lp.id} className="meal-in-day-card__loose-product">
@@ -261,22 +278,6 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
                 <span className="meal-in-day-card__macro-value">{safeMacros.fats.toFixed(1)}g</span>
               </div>
             </div>
-          </div>
-
-          {/* Actions */}
-          <div className="meal-in-day-card__actions">
-            <button
-              onClick={() => onEdit(mealInDay)}
-              className="meal-in-day-card__button meal-in-day-card__button--edit"
-            >
-              ✏️ Edytuj
-            </button>
-            <button
-              onClick={() => onDelete(mealInDay.id)}
-              className="meal-in-day-card__button meal-in-day-card__button--delete"
-            >
-              🗑️ Usuń
-            </button>
           </div>
         </div>
       )}
