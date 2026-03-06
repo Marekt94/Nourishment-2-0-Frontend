@@ -10,30 +10,7 @@ import "./MealInDayCard.css";
  */
 const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [looseProducts, setLooseProducts] = useState([]);
-
-  /**
-   * Fetch loose products from backend
-   */
-  const fetchLooseProducts = useCallback(async () => {
-    try {
-      const data = await looseProductInDayService.getLooseProductsByDay(mealInDay.id);
-      setLooseProducts(data || []);
-    } catch (err) {
-      console.error("Error fetching loose products:", err);
-      setLooseProducts([]);
-    }
-  }, [mealInDay.id]);
-
-  /**
-   * Fetch loose products when component mounts or mealInDay changes
-   * This ensures macros are calculated correctly even in collapsed view
-   */
-  useEffect(() => {
-    if (mealInDay.id) {
-      fetchLooseProducts();
-    }
-  }, [mealInDay.id, fetchLooseProducts]);
+  const looseProducts = mealInDay.looseProducts || [];
 
   /**
    * Calculate total macros for all meals in the day

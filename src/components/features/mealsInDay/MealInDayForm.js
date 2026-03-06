@@ -90,9 +90,13 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       });
 
       // Load loose products for editing
-      if (mealInDay.id) {
-        loadLooseProducts(mealInDay.id);
-      }
+      const formattedLooseProducts = (mealInDay.looseProducts || []).map((lp) => ({
+        id: lp.id,
+        tempId: lp.id,
+        product: lp.product,
+        weight: lp.weight,
+      }));
+      setLooseProducts(formattedLooseProducts);
     } else {
       // Reset form for new meal plan
       setFormData({
@@ -116,25 +120,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     }
   }, [mealInDay]);
 
-  /**
-   * Load loose products for editing mode
-   */
-  const loadLooseProducts = async (dayId) => {
-    try {
-      const data = await looseProductInDayService.getLooseProductsByDay(dayId);
-      // Convert to form format with tempId
-      const formattedLooseProducts = (data || []).map((lp) => ({
-        id: lp.id, // Keep real ID for editing
-        tempId: lp.id, // Use real ID as tempId for now
-        product: lp.product,
-        weight: lp.weight,
-      }));
-      setLooseProducts(formattedLooseProducts);
-    } catch (err) {
-      console.error("Error loading loose products:", err);
-      setLooseProducts([]);
-    }
-  };
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
