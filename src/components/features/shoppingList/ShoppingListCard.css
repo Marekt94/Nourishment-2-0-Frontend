@@ -1,0 +1,199 @@
+.shopping-list-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #f3f4f6;
+}
+
+.shopping-list-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.shopping-list-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.shopping-list-card__name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.shopping-list-card__date {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.shopping-list-card__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.shopping-list-card__action-btn {
+  background: #f3f4f6;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.shopping-list-card__action-btn:hover {
+  background: #e5e7eb;
+}
+
+.shopping-list-card__action-btn--delete:hover {
+  background: #fee2e2;
+}
+
+.shopping-list-card__progress-container {
+  margin-bottom: 1.5rem;
+  background: #f3f4f6;
+  height: 0.75rem;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.shopping-list-card__progress-bar {
+  background: #10b981;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.shopping-list-card__progress-text {
+  position: absolute;
+  right: 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+}
+
+.shopping-list-card__category-section {
+  margin-bottom: 1rem;
+}
+
+.shopping-list-card__category-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 0.25rem;
+}
+
+.shopping-list-card__products-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shopping-list-card__product-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  transition: opacity 0.2s;
+}
+
+.shopping-list-card__product-item--bought {
+  opacity: 0.6;
+}
+
+.shopping-list-card__product-item--bought .shopping-list-card__product-name {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+/* CUSTOM CHECKBOX */
+.shopping-list-card__checkbox-container {
+  display: block;
+  position: relative;
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.shopping-list-card__checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.shopping-list-card__checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1.25rem;
+  width: 1.25rem;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+}
+
+.shopping-list-card__checkbox-container:hover input ~ .shopping-list-card__checkmark {
+  background-color: #e5e7eb;
+}
+
+.shopping-list-card__checkbox-container input:checked ~ .shopping-list-card__checkmark {
+  background-color: #10b981;
+  border-color: #10b981;
+}
+
+.shopping-list-card__checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.shopping-list-card__checkbox-container input:checked ~ .shopping-list-card__checkmark:after {
+  display: block;
+}
+
+.shopping-list-card__product-info {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.shopping-list-card__product-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+.shopping-list-card__product-amount {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.shopping-list-card__empty-msg {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  margin: 2rem 0;
+}

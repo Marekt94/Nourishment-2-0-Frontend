@@ -25,6 +25,7 @@ export const Sidebar = () => {
 
   const menuItems = [
     { path: "/mealsinday", icon: "📅", label: "Potrawy w dniu" },
+    { path: "/shopping-lists", icon: "🛒", label: "Lista zakupów" },
     { path: "/meals", icon: "🍽️", label: "Potrawy" },
     { path: "/products", icon: "🥗", label: "Produkty" },
   ];
