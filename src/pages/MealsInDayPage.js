@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import useMealsInDay from "../hooks/useMealsInDay";
 import MealInDayCard from "../components/features/mealsInDay/MealInDayCard";
 import { MealInDayForm } from "../components/features/mealsInDay/MealInDayForm";
+import GenerateShoppingListDialog from "../components/features/mealsInDay/GenerateShoppingListDialog";
 import "./MealsInDayPage.css";
 
 const MealsInDayPage = () => {
   const { mealsInDay, isLoading, error, createMealInDay, updateMealInDay, deleteMealInDay } = useMealsInDay();
   const [showForm, setShowForm] = useState(false);
   const [editingMealInDay, setEditingMealInDay] = useState(null);
+  
+  const [showGenerateDialog, setShowGenerateDialog] = useState(false);
+  const [selectedMealForGenerate, setSelectedMealForGenerate] = useState(null);
 
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,6 +25,11 @@ const MealsInDayPage = () => {
   const handleEdit = (mealInDay) => {
     setEditingMealInDay(mealInDay);
     setShowForm(true);
+  };
+
+  const handleCreateShoppingList = (mealInDay) => {
+    setSelectedMealForGenerate(mealInDay);
+    setShowGenerateDialog(true);
   };
 
   const handleFormCancel = () => {
@@ -166,12 +175,29 @@ const MealsInDayPage = () => {
                   </span>
                 </div>
                 {filteredMealsInDay.map((mealInDay) => (
-                  <MealInDayCard key={mealInDay.id} mealInDay={mealInDay} onEdit={handleEdit} onDelete={handleDelete} />
+                  <MealInDayCard 
+                    key={mealInDay.id} 
+                    mealInDay={mealInDay} 
+                    onEdit={handleEdit} 
+                    onDelete={handleDelete} 
+                    onCreateShoppingList={handleCreateShoppingList}
+                  />
                 ))}
               </>
             )}
           </div>
         </>
+      )}
+
+      {showGenerateDialog && (
+        <GenerateShoppingListDialog 
+          open={showGenerateDialog}
+          initialMealInDay={selectedMealForGenerate}
+          onClose={() => {
+            setShowGenerateDialog(false);
+            setSelectedMealForGenerate(null);
+          }}
+        />
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import { ProductsPage } from "./pages/ProductsPage";
 import { MealsPage } from "./pages/MealsPage";
 import MealsInDayPage from "./pages/MealsInDayPage";
 import { ShoppingListPage } from "./pages/ShoppingListPage";
+import { ShoppingListDetailsPage } from "./pages/ShoppingListDetailsPage";
 import { Layout } from "./components/Layout";
 import { authService } from "./services/authService";
 import "./App.css";
@@ -51,6 +52,14 @@ export const App = () => {
           element={
             <ProtectedRoute>
               <ShoppingListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shopping-lists/:id"
+          element={
+            <ProtectedRoute>
+              <ShoppingListDetailsPage />
             </ProtectedRoute>
           }
         />

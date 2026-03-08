@@ -14,9 +14,9 @@ const useShoppingLists = () => {
   /**
    * Fetch all shopping lists from API
    */
-  const fetchShoppingLists = useCallback(async () => {
+  const fetchShoppingLists = useCallback(async (silent = false) => {
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
       setError(null);
       const data = await shoppingListService.getShoppingLists();
       setShoppingLists(data || []);
@@ -24,7 +24,7 @@ const useShoppingLists = () => {
       console.error("Error fetching shopping lists:", err);
       setError(err.response?.data?.message || "Nie udało się pobrać list zakupów");
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   }, []);
 

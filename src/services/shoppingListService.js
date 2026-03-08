@@ -45,6 +45,16 @@ const shoppingListService = {
   },
 
   /**
+   * Generate shopping list from meal plans
+   * @param {Object} requestData { name, mealPlans: [{mealInDayId, days}], looseProducts: [{productId, weight}] }
+   * @returns {Promise<Object>} {id: number}
+   */
+  async generateShoppingList(requestData) {
+    const response = await api.post("/shopping-lists/generate", requestData);
+    return response.data;
+  },
+
+  /**
    * Delete shopping list
    * @param {number} id 
    */

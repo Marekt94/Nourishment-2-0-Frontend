@@ -7,7 +7,7 @@ import "./MealInDayList.css";
  *
  * Renders list of daily meal plans
  */
-const MealInDayList = ({ mealsInDay, isLoading, error, onEdit, onDelete }) => {
+const MealInDayList = ({ mealsInDay, isLoading, error, onEdit, onDelete, onCreateShoppingList }) => {
   if (isLoading) {
     return (
       <div className="meal-in-day-list__loading">
@@ -44,6 +44,7 @@ const MealInDayList = ({ mealsInDay, isLoading, error, onEdit, onDelete }) => {
           mealInDay={mealInDay}
           onEdit={onEdit}
           onDelete={onDelete}
+          onCreateShoppingList={onCreateShoppingList}
         />
       ))}
     </div>

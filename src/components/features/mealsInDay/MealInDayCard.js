@@ -8,7 +8,7 @@ import "./MealInDayCard.css";
  * Displays a single daily meal plan with all meals (breakfast to supper).
  * Expandable to show detailed meal information and macros.
  */
-const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
+const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const looseProducts = mealInDay.looseProducts || [];
 
@@ -169,6 +169,13 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete }) => {
           </div>
 
           <div className="meal-in-day-card__header-actions" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => onCreateShoppingList(mealInDay)}
+              className="meal-in-day-card__button meal-in-day-card__button--create-list"
+              title="Stwórz listę zakupów"
+            >
+              🛒
+            </button>
             <button
               onClick={() => onEdit(mealInDay)}
               className="meal-in-day-card__button meal-in-day-card__button--edit"

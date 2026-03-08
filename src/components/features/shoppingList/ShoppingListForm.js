@@ -3,7 +3,8 @@ import { useProducts } from "../../../hooks/useProducts";
 import "./ShoppingListForm.css";
 
 export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, onError, isLoading }) => {
-  const { products } = useProducts();
+  const { products, createProduct } = useProducts();
+  const [isCreatingProduct, setIsCreatingProduct] = useState(false);
 
   const [formData, setFormData] = useState({
     id: null,
@@ -58,6 +59,33 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
     }));
     setProductSearchTerm("");
     setShowProductDropdown(false);
+  };
+
+  const handleCreateNewProduct = async (name) => {
+    if (!name.trim()) return;
+    setIsCreatingProduct(true);
+    try {
+      const newProductData = {
+        name: name.trim(),
+        kcalPer100: 0,
+        weight: 100,
+        proteins: 0,
+        fat: 0,
+        sugar: 0,
+        carbohydrates: 0,
+        sugarAndCarb: 0,
+        fiber: 0,
+        salt: 0,
+        unit: "g",
+        category: { id: 1 }
+      };
+      const created = await createProduct(newProductData);
+      handleAddProduct(created);
+    } catch (err) {
+      alert("Nie udało się utworzyć nowego produktu: " + err.message);
+    } finally {
+      setIsCreatingProduct(false);
+    }
   };
 
   const handleRemoveProduct = (tempId) => {
@@ -152,6 +180,7 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
               setShowProductDropdown(true);
             }}
             onFocus={() => setShowProductDropdown(true)}
+            onBlur={() => setTimeout(() => setShowProductDropdown(false), 200)}
             className="shopping-list-form__input"
           />
           {showProductDropdown && productSearchTerm && (
@@ -165,9 +194,12 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
                   {p.name} ({p.unit})
                 </div>
               ))}
-              {getFilteredProducts().length === 0 && (
-                <div className="shopping-list-form__dropdown-item shopping-list-form__dropdown-item--empty">
-                  Nie znaleziono produktów
+              {getFilteredProducts().length === 0 && productSearchTerm && (
+                <div 
+                  className="shopping-list-form__dropdown-item shopping-list-form__dropdown-item--create"
+                  onClick={() => handleCreateNewProduct(productSearchTerm)}
+                >
+                  {isCreatingProduct ? "Tworzenie..." : `+ Dodaj nowy produkt: "${productSearchTerm}"`}
                 </div>
               )}
             </div>
