@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useMeals } from "../../../hooks/useMeals";
 import { useProducts } from "../../../hooks/useProducts";
 import { looseProductInDayService } from "../../../services/looseProductInDayService";
+import { useToast } from "../../../contexts/ToastContext";
 import "./MealInDayForm.css";
 /**
  * MealInDayForm Component
@@ -23,6 +24,7 @@ import "./MealInDayForm.css";
  * - isLoading: Boolean - Shows loading state
  */
 export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onError, isLoading }) => {
+  const { addToast } = useToast();
   const { meals, isLoading: mealsLoading } = useMeals();
   const { products, isLoading: productsLoading } = useProducts();
   const dropdownRef = useRef(null);
@@ -276,7 +278,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
         await looseProductInDayService.deleteLooseProduct(productToRemove.id);
       } catch (err) {
         console.error("❌ Error deleting loose product:", err);
-        alert("Błąd podczas usuwania produktu");
+        addToast("Błąd podczas usuwania produktu", "error");
         return; // Don't remove from UI if backend delete failed
       }
     }
@@ -381,7 +383,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
     // Validate
     if (!formData.name.trim()) {
-      alert("Nazwa planu dnia jest wymagana");
+      addToast("Nazwa planu dnia jest wymagana", "warning");
       return;
     }
 
@@ -389,7 +391,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     const missingMeals = mealSlots.filter((slot) => !formData[slot.key]);
     if (missingMeals.length > 0) {
       const missingLabels = missingMeals.map((m) => m.label).join(", ");
-      alert(`Proszę wybrać posiłki dla: ${missingLabels}`);
+      addToast(`Proszę wybrać posiłki dla: ${missingLabels}`, "warning");
       return;
     }
 

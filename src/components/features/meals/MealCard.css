@@ -333,25 +333,37 @@
     flex-direction: column;
     align-items: stretch;
     padding: 1rem;
+    gap: 1rem;
   }
 
   .meal-card__compact-left {
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
   }
 
   .meal-card__compact-right {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
   }
 
   .meal-card__macro-compact {
+    flex: 1 1 40%; /* 2x2 grid approach using flex */
     min-width: auto;
   }
 
+  .meal-card__compact-actions {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: flex-start;
+  }
+
   .meal-card__expand-btn {
-    grid-column: span 4;
+    flex: 0 0 auto;
   }
 
   .meal-card__details-grid {
@@ -361,5 +373,7 @@
   .meal-card__name {
     font-size: 1rem;
     white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 }

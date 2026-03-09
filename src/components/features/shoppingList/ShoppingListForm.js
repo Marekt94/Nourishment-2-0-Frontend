@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useProducts } from "../../../hooks/useProducts";
+import { useToast } from "../../../contexts/ToastContext";
 import "./ShoppingListForm.css";
 
 export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, onError, isLoading }) => {
+  const { addToast } = useToast();
   const { products, createProduct } = useProducts();
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
 
@@ -82,7 +84,7 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
       const created = await createProduct(newProductData);
       handleAddProduct(created);
     } catch (err) {
-      alert("Nie udało się utworzyć nowego produktu: " + err.message);
+      addToast("Nie udało się utworzyć nowego produktu: " + err.message, "error");
     } finally {
       setIsCreatingProduct(false);
     }
@@ -126,7 +128,7 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      alert("Proszę podać nazwę listy");
+      addToast("Proszę podać nazwę listy", "warning");
       return;
     }
 

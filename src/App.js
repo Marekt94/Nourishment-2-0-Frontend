@@ -9,6 +9,7 @@ import { ShoppingListPage } from "./pages/ShoppingListPage";
 import { ShoppingListDetailsPage } from "./pages/ShoppingListDetailsPage";
 import { Layout } from "./components/Layout";
 import { authService } from "./services/authService";
+import { ToastProvider } from "./contexts/ToastContext";
 import "./App.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -18,52 +19,54 @@ const ProtectedRoute = ({ children }) => {
 
 export const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route
-          path="/products"
-          element={
-            <ProtectedRoute>
-              <ProductsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/meals"
-          element={
-            <ProtectedRoute>
-              <MealsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/mealsinday"
-          element={
-            <ProtectedRoute>
-              <MealsInDayPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/shopping-lists"
-          element={
-            <ProtectedRoute>
-              <ShoppingListPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/shopping-lists/:id"
-          element={
-            <ProtectedRoute>
-              <ShoppingListDetailsPage />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </Router>
+    <ToastProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute>
+                <ProductsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/meals"
+            element={
+              <ProtectedRoute>
+                <MealsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mealsinday"
+            element={
+              <ProtectedRoute>
+                <MealsInDayPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shopping-lists"
+            element={
+              <ProtectedRoute>
+                <ShoppingListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shopping-lists/:id"
+            element={
+              <ProtectedRoute>
+                <ShoppingListDetailsPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </ToastProvider>
   );
 };

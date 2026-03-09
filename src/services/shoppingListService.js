@@ -83,6 +83,15 @@ const shoppingListService = {
   },
 
   /**
+   * Bulk update multiple products on list
+   * @param {Array<Object>} productsData 
+   */
+  async bulkUpdateProductsOnList(productsData) {
+    const response = await api.put("/shopping-list-products/bulk", productsData);
+    return response.data;
+  },
+
+  /**
    * Remove product from list
    * @param {number} id - Product Entry ID
    */

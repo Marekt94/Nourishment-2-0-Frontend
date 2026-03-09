@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authService } from "../services/authService";
+import { useToast } from "../contexts/ToastContext";
 import "./LoginPage.css";
 
 export const LoginPage = () => {
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -28,7 +30,7 @@ export const LoginPage = () => {
 
     try {
       await authService.login(formData.email, formData.password);
-      alert("Zalogowano pomyślnie!");
+      addToast("Zalogowano pomyślnie!", "success");
       navigate("/mealsinday");
     } catch (err) {
       setError(err.response?.data?.message || "Nieprawidłowe dane logowania");
@@ -80,13 +82,6 @@ export const LoginPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="login-page__form">
-              {error && (
-                <div className="login-page__error">
-                  <span className="login-page__error-icon">⚠</span>
-                  {error}
-                </div>
-              )}
-
               <div className="login-page__form-group">
                 <label htmlFor="email" className="login-page__label">
                   Email
@@ -120,6 +115,13 @@ export const LoginPage = () => {
                   disabled={isLoading}
                 />
               </div>
+
+              {error && (
+                <div className="login-page__error" style={{ color: "red", marginTop: "-10px", marginBottom: "15px", fontSize: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span className="login-page__error-icon">⚠</span>
+                  {error}
+                </div>
+              )}
 
               <div className="login-page__form-options">
                 <label className="login-page__checkbox">

@@ -7,9 +7,11 @@ import React, { useState } from "react";
 import { useProducts } from "../hooks/useProducts";
 import { ProductList } from "../components/features/products/ProductList";
 import { ProductForm } from "../components/features/products/ProductForm";
+import { useToast } from "../contexts/ToastContext";
 import "./ProductsPage.css";
 
 export const ProductsPage = () => {
+  const { addToast } = useToast();
   const { products, isLoading, error, createProduct, updateProduct, deleteProduct } = useProducts();
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -38,24 +40,24 @@ export const ProductsPage = () => {
     try {
       if (editingProduct) {
         await updateProduct(formData);
-        alert("Product updated successfully!");
+        addToast("Product updated successfully!", "success");
       } else {
         await createProduct(formData);
-        alert("Product created successfully!");
+        addToast("Product created successfully!", "success");
       }
       setShowForm(false);
       setEditingProduct(null);
     } catch (err) {
-      alert(`Failed to ${editingProduct ? "update" : "create"} product: ${err.message}`);
+      addToast(`Failed to ${editingProduct ? "update" : "create"} product: ${err.message}`, "error");
     }
   };
 
   const handleDelete = async (id) => {
     try {
       await deleteProduct(id);
-      alert("Product deleted successfully!");
+      addToast("Product deleted successfully!", "success");
     } catch (err) {
-      alert(`Failed to delete product: ${err.message}`);
+      addToast(`Failed to delete product: ${err.message}`, "error");
     }
   };
 

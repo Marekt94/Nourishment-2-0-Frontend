@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useProducts } from "../../../hooks/useProducts";
 import useMealsInDay from "../../../hooks/useMealsInDay";
 import { shoppingListService } from "../../../services/shoppingListService";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../../../contexts/ToastContext";
 import "./GenerateShoppingListDialog.css";
 
 const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
+  const { addToast } = useToast();
   const { products } = useProducts();
   const { mealsInDay } = useMealsInDay();
   const navigate = useNavigate();
@@ -24,6 +26,24 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
   const [productSearchTerm, setProductSearchTerm] = useState("");
   const [showProductDropdown, setShowProductDropdown] = useState(false);
   const [productHighlightedIndex, setProductHighlightedIndex] = useState(-1);
+
+  const mealDropdownRef = useRef(null);
+  const productDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mealDropdownRef.current && !mealDropdownRef.current.contains(event.target)) {
+        setShowMealDropdown(false);
+      }
+      if (productDropdownRef.current && !productDropdownRef.current.contains(event.target)) {
+        setShowProductDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -88,6 +108,8 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
       productId: product.id,
       productName: product.name,
       weight: product.weight || 100,
+      unitWeight: product.weight || 100,
+      quantity: 1,
       unit: product.unit
     }]);
     setProductSearchTerm("");
@@ -96,7 +118,25 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
   };
 
   const changeWeight = (id, newWeight) => {
-    setLooseProducts(prev => prev.map(p => p.id === id ? { ...p, weight: parseFloat(newWeight) || 0 } : p));
+    setLooseProducts(prev => prev.map(p => {
+      if (p.id === id) {
+        const weight = parseFloat(newWeight) || 0;
+        const quantity = p.unitWeight > 0 ? (weight / p.unitWeight) : 0;
+        return { ...p, weight, quantity };
+      }
+      return p;
+    }));
+  };
+
+  const changeQuantity = (id, newQuantity) => {
+    setLooseProducts(prev => prev.map(p => {
+      if (p.id === id) {
+        const quantity = parseFloat(newQuantity) || 0;
+        const weight = p.unitWeight > 0 ? (quantity * p.unitWeight) : p.weight;
+        return { ...p, quantity, weight };
+      }
+      return p;
+    }));
   };
 
   const removeLooseProduct = (id) => {
@@ -105,8 +145,14 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) return alert("Podaj nazwę listy");
-    if (mealPlans.length === 0 && looseProducts.length === 0) return alert("Dodaj przynajmniej jeden plan dnia lub produkt");
+    if (!name.trim()) {
+      addToast("Podaj nazwę listy", "warning");
+      return;
+    }
+    if (mealPlans.length === 0 && looseProducts.length === 0) {
+      addToast("Dodaj przynajmniej jeden plan dnia lub produkt", "warning");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -122,7 +168,7 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
       navigate("/shopping-lists");
     } catch (err) {
       console.error(err);
-      alert("Wystąpił błąd przy generowaniu listy: " + err.message);
+      addToast("Wystąpił błąd przy generowaniu listy: " + err.message, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -203,7 +249,7 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
               </div>
             ))}
             
-            <div className="generate-sl-dialog__search-wrap">
+            <div className="generate-sl-dialog__search-wrap" ref={mealDropdownRef}>
               <input 
                 type="text" 
                 placeholder="Dodaj kolejny plan dnia..." 
@@ -213,11 +259,14 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
                   setMealHighlightedIndex(-1);
                   setShowMealDropdown(true);
                 }}
+                onClick={() => {
+                  setMealHighlightedIndex(-1);
+                  setShowMealDropdown(true);
+                }}
                 onFocus={() => {
                   setMealHighlightedIndex(-1);
                   setShowMealDropdown(true);
                 }}
-                onBlur={() => setTimeout(() => setShowMealDropdown(false), 200)}
                 onKeyDown={handleMealKeyDown}
               />
               {showMealDropdown && (
@@ -243,20 +292,34 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
               <div key={lp.id} className="generate-sl-dialog__item">
                 <span className="generate-sl-dialog__item-name">{lp.productName}</span>
                 <div className="generate-sl-dialog__item-controls">
-                  <input 
-                    type="number" 
-                    min="0"
-                    step="0.01" 
-                    value={lp.weight} 
-                    onChange={e => changeWeight(lp.id, e.target.value)} 
-                  />
-                  <span>{lp.unit}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                    <input 
+                      type="number" 
+                      min="0"
+                      step="0.01" 
+                      value={lp.weight} 
+                      onChange={e => changeWeight(lp.id, e.target.value)} 
+                    />
+                    <span>{lp.unit}</span>
+                  </div>
+                  {lp.unitWeight > 0 && (
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                      <input 
+                        type="number" 
+                        min="0"
+                        step="0.1" 
+                        value={(lp.quantity || 0).toFixed(1)} 
+                        onChange={e => changeQuantity(lp.id, e.target.value)} 
+                      />
+                      <span>szt.</span>
+                    </div>
+                  )}
                   <button type="button" title="Usuń" className="generate-sl-dialog__btn-icon" onClick={() => removeLooseProduct(lp.id)}>🗑️</button>
                 </div>
               </div>
             ))}
             
-            <div className="generate-sl-dialog__search-wrap">
+            <div className="generate-sl-dialog__search-wrap" ref={productDropdownRef}>
               <input 
                 type="text" 
                 placeholder="Dodaj dodatkowy produkt..." 
@@ -266,11 +329,14 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
                   setProductHighlightedIndex(-1);
                   setShowProductDropdown(true);
                 }}
+                onClick={() => {
+                  setProductHighlightedIndex(-1);
+                  setShowProductDropdown(true);
+                }}
                 onFocus={() => {
                   setProductHighlightedIndex(-1);
                   setShowProductDropdown(true);
                 }}
-                onBlur={() => setTimeout(() => setShowProductDropdown(false), 200)}
                 onKeyDown={handleProductKeyDown}
               />
               {showProductDropdown && (

@@ -2,15 +2,19 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useShoppingLists from '../hooks/useShoppingLists';
 import { shoppingListService } from '../services/shoppingListService';
+import { useToast } from '../contexts/ToastContext';
 import './ShoppingListDetailsPage.css';
 
 export const ShoppingListDetailsPage = () => {
+  const { addToast } = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const { shoppingLists, isLoading, error, refetch } = useShoppingLists();
   const [list, setList] = useState(null);
   const [categoryOrder, setCategoryOrder] = useState([]);
   const [collapsedCategories, setCollapsedCategories] = useState({});
+  const [pendingUpdates, setPendingUpdates] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
   // Find the list from the general context or fetch if not present
   useEffect(() => {
@@ -121,20 +125,55 @@ export const ShoppingListDetailsPage = () => {
     }));
   };
 
-  const toggleBought = async (productInList) => {
-    try {
-      const updatedProduct = {
-        id: productInList.id,
-        listId: productInList.listId,
-        productId: productInList.productId,
-        weight: productInList.weight,
-        bought: !productInList.bought
+  const toggleBought = (productInList) => {
+    // Optimistic UI update
+    const previousBoughtState = productInList.bought;
+    setList(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        products: prev.products.map(p => 
+          p.id === productInList.id ? { ...p, bought: !previousBoughtState } : p
+        )
       };
-      await shoppingListService.updateProductOnList(updatedProduct);
-      refetch(true); // reload list from backend
+    });
+    setPendingUpdates(prev => ({
+      ...prev,
+      [productInList.id]: !previousBoughtState
+    }));
+  };
+
+  const handleSaveAndClose = async () => {
+    const idsToUpdate = Object.keys(pendingUpdates);
+    if (idsToUpdate.length === 0) {
+      navigate('/shopping-lists');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const productsToUpdate = idsToUpdate.map(id => {
+        const product = list.products.find(p => p.id === parseInt(id));
+        if (!product) return null;
+        return {
+          id: product.id,
+          listId: product.listId,
+          productId: product.productId,
+          weight: product.weight,
+          bought: pendingUpdates[id]
+        };
+      }).filter(Boolean);
+      
+      if (productsToUpdate.length > 0) {
+        await shoppingListService.bulkUpdateProductsOnList(productsToUpdate);
+      }
+      
+      addToast("Lista została pomyślnie zapisana", "success");
+      navigate('/shopping-lists');
     } catch (err) {
-      console.error("Error toggling bought status:", err);
-      alert("Nie udało się zaktualizować statusu produktu");
+      console.error("Error saving shopping list:", err);
+      addToast("Wystąpił błąd podczas zapisywania listy. Skontroluj połączenie internetowe i spróbuj ponownie.", "error");
+      setIsSaving(false);
     }
   };
 
@@ -158,6 +197,13 @@ export const ShoppingListDetailsPage = () => {
             </button>
             <div className="shopping-list-details__title-group">
                 <h1 className="shopping-list-details__title">{list.name}</h1>
+                <button 
+                  className="shopping-list-details__save-btn" 
+                  onClick={handleSaveAndClose}
+                  disabled={isSaving}
+                >
+                    {isSaving ? "Zapisywanie..." : "Zapisz & Zamknij"}
+                </button>
             </div>
         </div>
 
@@ -202,10 +248,16 @@ export const ShoppingListDetailsPage = () => {
                                     </label>
                                     <div className="shopping-list-details__product-info">
                                         <span className="shopping-list-details__product-name">{item.productName}</span>
-                                        <span className="shopping-list-details__product-amount">
-                                            {item.weight}{item.productUnit} 
-                                            {item.quantity > 0 && item.quantity !== 1 && ` (~${item.quantity.toFixed(2)} szt.)`}
-                                        </span>
+                                        <div className="shopping-list-details__product-amount">
+                                            {item.quantity > 0 ? (
+                                              <>
+                                                <span className="shopping-list-details__product-quantity">{item.quantity.toFixed(1)} szt.</span>
+                                                <span className="shopping-list-details__product-weight-secondary">({item.weight}{item.productUnit})</span>
+                                              </>
+                                            ) : (
+                                              <span className="shopping-list-details__product-quantity">{item.weight}{item.productUnit}</span>
+                                            )}
+                                        </div>
                                     </div>
                                 </li>
                             ))}

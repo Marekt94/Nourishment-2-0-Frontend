@@ -79,8 +79,9 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
   };
 
   // Helper function to render a meal
-  const renderMeal = (label, meal, factor) => {
+  const renderMeal = (label, meal, factorRaw) => {
     if (!meal) return null;
+    const factor = factorRaw || 1.0;
 
     // Calculate meal macros
     let mealMacros = { calories: 0, proteins: 0, carbs: 0, fats: 0 };
@@ -204,10 +205,9 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
             <h4>Posiłki:</h4>
             {renderMeal("🌅 Śniadanie", mealInDay.breakfast, mealInDay.factorBreakfast)}
             {renderMeal("🥐 Drugie śniadanie", mealInDay.secondBreakfast, mealInDay.factorSecondBreakfast)}
-            {!mealInDay.for5Days && renderMeal("🍽️ Lunch", mealInDay.lunch, mealInDay.factorLunch)}
-            {mealInDay.for5Days && renderMeal("🥘 Obiad", mealInDay.dinner, mealInDay.factorDinner)}
-            {mealInDay.for5Days &&
-              renderMeal("☕ Podwieczorek", mealInDay.afternoonSnack, mealInDay.factorAfternoonSnack)}
+            {renderMeal("🍽️ Lunch", mealInDay.lunch, mealInDay.factorLunch)}
+            {renderMeal("☕ Podwieczorek", mealInDay.afternoonSnack, mealInDay.factorAfternoonSnack)}
+            {renderMeal("🥘 Obiad", mealInDay.dinner, mealInDay.factorDinner)}
             {renderMeal("🌙 Kolacja", mealInDay.supper, mealInDay.factorSupper)}
           </div>
 

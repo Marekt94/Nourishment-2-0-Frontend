@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
+import { useToast } from "../contexts/ToastContext";
 import "./LandingPage.css";
 
 export const LandingPage = () => {
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
@@ -28,7 +30,7 @@ export const LandingPage = () => {
 
     try {
       await authService.login(formData.username, formData.password);
-      alert("Zalogowano pomyślnie!");
+      addToast("Zalogowano pomyślnie!", "success");
       navigate("/products");
     } catch (err) {
       setError(err.response?.data?.message || "Nieprawidłowe dane logowania");

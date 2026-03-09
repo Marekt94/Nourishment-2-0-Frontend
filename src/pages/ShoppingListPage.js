@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import useShoppingLists from "../hooks/useShoppingLists";
 import ShoppingListCard from "../components/features/shoppingList/ShoppingListCard";
 import { ShoppingListForm } from "../components/features/shoppingList/ShoppingListForm";
+import { useToast } from "../contexts/ToastContext";
 import "./ShoppingListPage.css";
 
 export const ShoppingListPage = () => {
+  const { addToast } = useToast();
   const { 
     shoppingLists, 
     isLoading, 
@@ -33,8 +35,9 @@ export const ShoppingListPage = () => {
     if (window.confirm("Czy na pewno chcesz usunąć tę listę zakupów?")) {
       try {
         await deleteShoppingList(id);
+        addToast("Lista zakupów usunięta", "success");
       } catch (err) {
-        alert("Błąd podczas usuwania listy");
+        addToast("Błąd podczas usuwania listy", "error");
       }
     }
   };

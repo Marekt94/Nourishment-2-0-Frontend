@@ -6,9 +6,11 @@
 import React, { useState } from "react";
 import { useMeals } from "../hooks/useMeals";
 import { MealList } from "../components/features/meals/MealList";
+import { useToast } from "../contexts/ToastContext";
 import "./MealsPage.css";
 
 export const MealsPage = () => {
+  const { addToast } = useToast();
   const { meals, isLoading, error, createMeal, updateMeal, deleteMeal } = useMeals();
   const [showForm, setShowForm] = useState(false);
   const [editingMeal, setEditingMeal] = useState(null);
@@ -36,24 +38,24 @@ export const MealsPage = () => {
     try {
       if (editingMeal) {
         await updateMeal(formData);
-        alert("Posiłek zaktualizowany!");
+        addToast("Posiłek zaktualizowany!", "success");
       } else {
         await createMeal(formData);
-        alert("Posiłek utworzony!");
+        addToast("Posiłek utworzony!", "success");
       }
       setShowForm(false);
       setEditingMeal(null);
     } catch (err) {
-      alert(`Błąd podczas ${editingMeal ? "aktualizacji" : "tworzenia"} posiłku: ${err.message}`);
+      addToast(`Błąd podczas ${editingMeal ? "aktualizacji" : "tworzenia"} posiłku: ${err.message}`, "error");
     }
   };
 
   const handleDelete = async (id) => {
     try {
       await deleteMeal(id);
-      alert("Posiłek usunięty!");
+      addToast("Posiłek usunięty!", "success");
     } catch (err) {
-      alert(`Błąd podczas usuwania posiłku: ${err.message}`);
+      addToast(`Błąd podczas usuwania posiłku: ${err.message}`, "error");
     }
   };
 

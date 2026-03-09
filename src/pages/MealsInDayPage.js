@@ -3,9 +3,11 @@ import useMealsInDay from "../hooks/useMealsInDay";
 import MealInDayCard from "../components/features/mealsInDay/MealInDayCard";
 import { MealInDayForm } from "../components/features/mealsInDay/MealInDayForm";
 import GenerateShoppingListDialog from "../components/features/mealsInDay/GenerateShoppingListDialog";
+import { useToast } from "../contexts/ToastContext";
 import "./MealsInDayPage.css";
 
 const MealsInDayPage = () => {
+  const { addToast } = useToast();
   const { mealsInDay, isLoading, error, createMealInDay, updateMealInDay, deleteMealInDay } = useMealsInDay();
   const [showForm, setShowForm] = useState(false);
   const [editingMealInDay, setEditingMealInDay] = useState(null);
@@ -56,7 +58,7 @@ const MealsInDayPage = () => {
   };
 
   const handleFormError = (errorMessage) => {
-    alert(errorMessage);
+    addToast(errorMessage, "error");
   };
 
   const handleDelete = async (id) => {
@@ -64,7 +66,7 @@ const MealsInDayPage = () => {
       await deleteMealInDay(id);
     } catch (error) {
       console.error("Error deleting meal in day:", error);
-      alert("Nie udało się usunąć planu dnia");
+      addToast("Nie udało się usunąć planu dnia", "error");
     }
   };
 
