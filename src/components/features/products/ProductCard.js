@@ -10,7 +10,7 @@ export const ProductCard = ({ product, onEdit, onDelete }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
+    if (window.confirm(`Czy na pewno chcesz usunąć "${product.name}"?`)) {
       onDelete(product.id);
     }
   };
@@ -58,7 +58,7 @@ export const ProductCard = ({ product, onEdit, onDelete }) => {
       {/* Compact View - Always Visible */}
       <div className="product-card__compact" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="product-card__compact-left">
-          <h3 className="product-card__name">{String(product.name || product.NAME || "Unnamed Product")}</h3>
+          <h3 className="product-card__name">{String(product.name || product.NAME || "Nienazwany produkt")}</h3>
           {categoryName && <span className="product-card__category-badge">{categoryName}</span>}
         </div>
 
@@ -78,6 +78,29 @@ export const ProductCard = ({ product, onEdit, onDelete }) => {
           <div className="product-card__macro-compact">
             <span className="product-card__macro-label">Tłuszcze</span>
             <span className="product-card__macro-value">{getFat()}g</span>
+          </div>
+
+          <div className="product-card__compact-actions">
+            <button
+              className="product-card__button product-card__button--edit"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(product);
+              }}
+              title="Edytuj produkt"
+            >
+              ✏️
+            </button>
+            <button
+              className="product-card__button product-card__button--delete"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+              title="Usuń produkt"
+            >
+              🗑️
+            </button>
           </div>
 
           <button
@@ -162,27 +185,6 @@ export const ProductCard = ({ product, onEdit, onDelete }) => {
               <p className="product-card__description">{String(product.description || product.DESCRIPTION)}</p>
             </div>
           )}
-
-          <div className="product-card__actions">
-            <button
-              className="product-card__button product-card__button--edit"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(product);
-              }}
-            >
-              Edit
-            </button>
-            <button
-              className="product-card__button product-card__button--delete"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete();
-              }}
-            >
-              Delete
-            </button>
-          </div>
         </div>
       )}
     </div>

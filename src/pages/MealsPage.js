@@ -6,6 +6,7 @@
 import React, { useState } from "react";
 import { useMeals } from "../hooks/useMeals";
 import { MealList } from "../components/features/meals/MealList";
+import { MealForm } from "../components/features/meals/MealForm";
 import { useToast } from "../contexts/ToastContext";
 import "./MealsPage.css";
 
@@ -92,13 +93,12 @@ export const MealsPage = () => {
         <div className="meals-page__container">
           {showForm ? (
             <div className="meals-page__form-wrapper">
-              <div className="meals-page__form-placeholder">
-                <h3>Formularz posiłku (wkrótce)</h3>
-                <p>Tutaj będzie formularz do tworzenia/edycji posiłku</p>
-                <button className="meals-page__button meals-page__button--cancel" onClick={handleFormCancel}>
-                  Anuluj
-                </button>
-              </div>
+              <MealForm 
+                meal={editingMeal} 
+                onSubmit={handleFormSubmit} 
+                onCancel={handleFormCancel} 
+                isLoading={isLoading} 
+              />
             </div>
           ) : (
             <>

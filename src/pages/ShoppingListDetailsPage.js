@@ -9,7 +9,7 @@ export const ShoppingListDetailsPage = () => {
   const { addToast } = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { shoppingLists, isLoading, error, refetch } = useShoppingLists();
+  const { shoppingLists, isLoading, error } = useShoppingLists();
   const [list, setList] = useState(null);
   const [categoryOrder, setCategoryOrder] = useState([]);
   const [collapsedCategories, setCollapsedCategories] = useState({});

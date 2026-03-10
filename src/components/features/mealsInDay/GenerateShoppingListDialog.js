@@ -162,7 +162,7 @@ const GenerateShoppingListDialog = ({ open, initialMealInDay, onClose }) => {
         looseProducts: looseProducts.map(p => ({ productId: p.productId, weight: p.weight }))
       };
       
-      const response = await shoppingListService.generateShoppingList(requestData);
+      await shoppingListService.generateShoppingList(requestData);
       onClose();
       // Redirect to shopping lists page
       navigate("/shopping-lists");

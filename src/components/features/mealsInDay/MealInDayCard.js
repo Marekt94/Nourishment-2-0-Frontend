@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { looseProductInDayService } from "../../../services/looseProductInDayService";
+import React, { useState } from "react";
 import "./MealInDayCard.css";
 
 /**
@@ -205,9 +204,9 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
             <h4>Posiłki:</h4>
             {renderMeal("🌅 Śniadanie", mealInDay.breakfast, mealInDay.factorBreakfast)}
             {renderMeal("🥐 Drugie śniadanie", mealInDay.secondBreakfast, mealInDay.factorSecondBreakfast)}
-            {renderMeal("🍽️ Lunch", mealInDay.lunch, mealInDay.factorLunch)}
-            {renderMeal("☕ Podwieczorek", mealInDay.afternoonSnack, mealInDay.factorAfternoonSnack)}
-            {renderMeal("🥘 Obiad", mealInDay.dinner, mealInDay.factorDinner)}
+            {!mealInDay.for5Days && renderMeal("🍽️ Lunch", mealInDay.lunch, mealInDay.factorLunch)}
+            {mealInDay.for5Days && renderMeal("🥘 Obiad", mealInDay.dinner, mealInDay.factorDinner)}
+            {mealInDay.for5Days && renderMeal("☕ Podwieczorek", mealInDay.afternoonSnack, mealInDay.factorAfternoonSnack)}
             {renderMeal("🌙 Kolacja", mealInDay.supper, mealInDay.factorSupper)}
           </div>
 

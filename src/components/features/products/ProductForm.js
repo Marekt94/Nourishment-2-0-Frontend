@@ -101,6 +101,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
       carbohydrates: formData.carbohydrates ? parseFloat(formData.carbohydrates) : 0,
       fat: formData.fat ? parseFloat(formData.fat) : 0,
       sugar: formData.sugar ? parseFloat(formData.sugar) : 0,
+      sugarAndCarb: (formData.carbohydrates ? parseFloat(formData.carbohydrates) : 0) + (formData.sugar ? parseFloat(formData.sugar) : 0),
       fiber: formData.fiber ? parseFloat(formData.fiber) : 0,
       weight: formData.weight ? parseFloat(formData.weight) : 0,
     };
@@ -115,12 +116,12 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
 
   return (
     <form className="product-form" onSubmit={handleSubmit}>
-      <h3 className="product-form__title">{product ? "Edit Product" : "Create New Product"}</h3>
+      <h3 className="product-form__title">{product ? "Edytuj produkt" : "Utwórz nowy produkt"}</h3>
 
       <div className="product-form__row">
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="name">
-            Product Name *
+            Nazwa produktu *
           </label>
           <input
             type="text"
@@ -131,13 +132,13 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
             onChange={handleChange}
             required
             disabled={isLoading}
-            placeholder="e.g., Chicken Breast"
+            placeholder="np. Pierś z kurczaka"
           />
         </div>
 
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="category">
-            Category
+            Kategoria
           </label>
           <select
             id="category"
@@ -147,21 +148,21 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
             onChange={handleChange}
             disabled={isLoading || categoriesLoading}
           >
-            <option value="">-- Select Category --</option>
+            <option value="">-- Wybierz kategorię --</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
               </option>
             ))}
           </select>
-          {categoriesLoading && <span className="product-form__hint">Loading categories...</span>}
+          {categoriesLoading && <span className="product-form__hint">Pobieranie kategorii...</span>}
         </div>
       </div>
 
       <div className="product-form__row">
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="kcalPer100">
-            Calories (kcal/100g)
+            Kalorie (kcal/100g)
           </label>
           <input
             type="number"
@@ -179,7 +180,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
 
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="proteins">
-            Protein (g)
+            Białko (g)
           </label>
           <input
             type="number"
@@ -199,7 +200,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
       <div className="product-form__row">
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="carbohydrates">
-            Carbs (g)
+            Węglowodany (g)
           </label>
           <input
             type="number"
@@ -217,7 +218,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
 
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="fat">
-            Fat (g)
+            Tłuszcze (g)
           </label>
           <input
             type="number"
@@ -237,7 +238,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
       <div className="product-form__row">
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="sugar">
-            Sugar (g)
+            Cukry (g)
           </label>
           <input
             type="number"
@@ -255,7 +256,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
 
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="fiber">
-            Fiber (g)
+            Błonnik (g)
           </label>
           <input
             type="number"
@@ -275,7 +276,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
       <div className="product-form__row">
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="weight">
-            Weight
+            Waga
           </label>
           <input
             type="number"
@@ -293,7 +294,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
 
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="unit">
-            Unit
+            Jednostka
           </label>
           <select
             id="unit"
@@ -303,17 +304,17 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
             onChange={handleChange}
             disabled={isLoading}
           >
-            <option value="g">g (grams)</option>
-            <option value="ml">ml (milliliters)</option>
-            <option value="oz">oz (ounces)</option>
-            <option value="lb">lb (pounds)</option>
+            <option value="g">g (gramy)</option>
+            <option value="ml">ml (mililitry)</option>
+            <option value="oz">oz (uncje)</option>
+            <option value="lb">lb (funty)</option>
           </select>
         </div>
       </div>
 
       <div className="product-form__group">
         <label className="product-form__label" htmlFor="description">
-          Description
+          Opis
         </label>
         <textarea
           id="description"
@@ -323,7 +324,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
           onChange={handleChange}
           disabled={isLoading}
           rows="3"
-          placeholder="Optional description..."
+          placeholder="Opcjonalny opis..."
         />
       </div>
 
@@ -334,10 +335,10 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
           onClick={onCancel}
           disabled={isLoading}
         >
-          Cancel
+          Anuluj
         </button>
         <button type="submit" className="product-form__button product-form__button--submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : product ? "Update" : "Create"}
+          {isLoading ? "Zapisywanie..." : product ? "Aktualizuj" : "Utwórz"}
         </button>
       </div>
     </form>
