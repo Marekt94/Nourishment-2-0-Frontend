@@ -76,10 +76,10 @@
 .landing-page__hero {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 6rem 2rem;
+  padding: 2rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  gap: 3rem;
   align-items: center;
   min-height: calc(100vh - 80px);
 }
@@ -122,18 +122,17 @@
 
 .landing-page__hero-visual {
   position: relative;
-  height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .landing-page__hero-card {
-  position: absolute;
+  position: relative;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(30px) saturate(180%);
   border-radius: 2rem;
-  padding: 3rem;
+  padding: 2.5rem;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.2),
     inset 0 1px 1px rgba(255, 255, 255, 0.3);
@@ -282,7 +281,7 @@
 @media (max-width: 1024px) {
   .landing-page__hero {
     grid-template-columns: 1fr;
-    padding: 4rem 2rem;
+    padding: 2rem;
     gap: 3rem;
   }
 

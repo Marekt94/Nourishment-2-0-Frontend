@@ -90,7 +90,7 @@ export const LandingPage = () => {
                   value={formData.username}
                   onChange={handleChange}
                   className="landing-page__form-input"
-                  placeholder="ADMIN"
+                  placeholder="UŻYTKOWNIK"
                   required
                   disabled={isLoading}
                 />
