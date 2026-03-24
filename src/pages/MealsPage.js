@@ -89,58 +89,56 @@ export const MealsPage = () => {
       </div>
 
       {/* Main Content */}
-      <main className="meals-page__main">
-        <div className="meals-page__container">
-          {showForm ? (
-            <div className="meals-page__form-wrapper">
-              <MealForm 
-                meal={editingMeal} 
-                onSubmit={handleFormSubmit} 
-                onCancel={handleFormCancel} 
-                isLoading={isLoading} 
-              />
-            </div>
-          ) : (
-            <>
-              {/* Search and Filter Bar */}
-              <div className="meals-page__controls">
-                <div className="meals-page__search-wrapper">
-                  <input
-                    type="text"
-                    className="meals-page__search"
-                    placeholder="🔍 Szukaj posiłków po nazwie..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  {searchTerm && (
-                    <button
-                      className="meals-page__clear-search"
-                      onClick={() => setSearchTerm("")}
-                      title="Wyczyść wyszukiwanie"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                <select className="meals-page__sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                  <option value="name">Sortuj po nazwie</option>
-                  <option value="calories">Sortuj po kaloriach</option>
-                  <option value="proteins">Sortuj po białku</option>
-                </select>
+      <div className="meals-page__container">
+        {showForm ? (
+          <div className="meals-page__form-wrapper">
+            <MealForm 
+              meal={editingMeal} 
+              onSubmit={handleFormSubmit} 
+              onCancel={handleFormCancel} 
+              isLoading={isLoading} 
+            />
+          </div>
+        ) : (
+          <>
+            {/* Search and Filter Bar */}
+            <div className="meals-page__controls">
+              <div className="meals-page__search-wrapper">
+                <input
+                  type="text"
+                  className="meals-page__search"
+                  placeholder="🔍 Szukaj posiłków po nazwie..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button
+                    className="meals-page__clear-search"
+                    onClick={() => setSearchTerm("")}
+                    title="Wyczyść wyszukiwanie"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
 
-              <MealList
-                meals={filteredMeals}
-                isLoading={isLoading}
-                error={error}
-                onEdit={handleEditClick}
-                onDelete={handleDelete}
-              />
-            </>
-          )}
-        </div>
-      </main>
+              <select className="meals-page__sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <option value="name">Sortuj po nazwie</option>
+                <option value="calories">Sortuj po kaloriach</option>
+                <option value="proteins">Sortuj po białku</option>
+              </select>
+            </div>
+
+            <MealList
+              meals={filteredMeals}
+              isLoading={isLoading}
+              error={error}
+              onEdit={handleEditClick}
+              onDelete={handleDelete}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 };

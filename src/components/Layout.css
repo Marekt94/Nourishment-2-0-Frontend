@@ -6,19 +6,25 @@
 
 .layout__content {
   flex: 1;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, padding-left 0.3s ease;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* Desktop - content z marginesem dla sidebara */
 @media (min-width: 769px) {
   .layout__content {
+    padding-left: 0;
     margin-left: 280px;
+    width: calc(100% - 280px);
   }
 }
 
 /* Mobile - content na całą szerokość */
 @media (max-width: 768px) {
   .layout__content {
+    padding-left: 0;
     margin-left: 0;
+    width: 100%;
   }
 }
