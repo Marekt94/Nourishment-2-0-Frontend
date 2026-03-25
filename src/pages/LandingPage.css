@@ -1,5 +1,6 @@
 .landing-page {
   min-height: 100vh;
+  width: 100%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow: hidden;
@@ -316,19 +317,30 @@
 }
 
 @media (max-width: 480px) {
+  .landing-page__hero {
+    padding: 1rem 1rem 3rem 1rem;
+    gap: 1.5rem;
+  }
+
   .landing-page__hero-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
+    word-break: break-word;
   }
 
   .landing-page__hero-subtitle {
     font-size: 1rem;
+    line-height: 1.5;
   }
 
   .landing-page__hero-card--login {
-    padding: 2rem;
+    padding: 1.5rem;
+    width: 100%;
+    margin-bottom: 2rem;
   }
 
   .landing-page__login-title {
     font-size: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 }
+

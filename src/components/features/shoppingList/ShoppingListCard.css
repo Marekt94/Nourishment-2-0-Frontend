@@ -8,6 +8,9 @@
   height: 100%;
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   border: 2px solid transparent;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .shopping-list-card--clickable {
@@ -32,7 +35,9 @@
   font-weight: 700;
   color: #111827;
   margin: 0 0 0.25rem 0;
+  word-break: break-word;
 }
+
 
 .shopping-list-card__date {
   font-size: 0.75rem;

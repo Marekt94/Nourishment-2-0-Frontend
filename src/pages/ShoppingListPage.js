@@ -95,13 +95,23 @@ export const ShoppingListPage = () => {
       ) : (
         <>
           <div className="shopping-list-page__controls">
-            <input
-              type="text"
-              className="shopping-list-page__search"
-              placeholder="🔍 Szukaj listy po nazwie..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <div className="shopping-list-page__search-wrapper">
+              <input
+                type="text"
+                className="shopping-list-page__search"
+                placeholder="🔍 Szukaj listy po nazwie..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button
+                  className="shopping-list-page__clear-search"
+                  onClick={() => setSearchTerm("")}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </div>
 
           {isLoading && <p>Ładowanie...</p>}

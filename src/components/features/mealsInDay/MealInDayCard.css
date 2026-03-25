@@ -6,6 +6,9 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
   transition: all 0.3s ease;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .meal-in-day-card:hover {
@@ -24,6 +27,7 @@
   justify-content: space-between;
   align-items: center;
   transition: background-color 0.2s ease;
+  position: relative;
 }
 
 .meal-in-day-card__header:hover {
@@ -42,7 +46,9 @@
   font-size: 18px;
   font-weight: 600;
   color: #333;
+  word-break: break-word;
 }
+
 
 .meal-in-day-card__badge {
   background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
@@ -280,12 +286,16 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .meal-in-day-card__loose-product-name {
   font-size: 14px;
   font-weight: 600;
   color: #333;
+  word-break: break-word;
+  flex: 1;
 }
 
 .meal-in-day-card__loose-product-weight {
@@ -415,33 +425,51 @@
 @media (max-width: 768px) {
   .meal-in-day-card__header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 16px;
+    padding: 16px;
+  }
+
+  .meal-in-day-card__title {
+    padding-right: 24px; /* Space for absolute expand icon */
   }
 
   .meal-in-day-card__summary {
     width: 100%;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 8px;
+    justify-content: space-between;
   }
 
   .meal-in-day-card__summary-item {
-    flex: 1;
-    min-width: calc(50% - 6px);
+    flex: 1 1 45%;
+    min-width: 0;
+    padding: 6px 8px;
   }
 
   .meal-in-day-card__summary-item--calories {
     flex-basis: 100%;
   }
 
+  .meal-in-day-card__header-actions {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    margin-top: 8px;
+  }
+
   .meal-in-day-card__expand-icon {
     position: absolute;
-    top: 20px;
-    right: 24px;
+    top: 16px;
+    right: 16px;
+    margin-left: 0;
+  }
+
+  .meal-in-day-card__content {
+    padding: 16px;
   }
 
   .meal-in-day-card__macros-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .meal-in-day-card__actions {
@@ -451,4 +479,14 @@
   .meal-in-day-card__button {
     width: 100%;
   }
+
+  .meal-in-day-card__meal-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .meal-in-day-card__meal-macros-summary {
+    width: 100%;
+  }
 }
+

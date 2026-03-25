@@ -205,3 +205,32 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .shopping-list-form {
+    padding: 1rem;
+  }
+
+  .shopping-list-form__product-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .shopping-list-form__product-inputs {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .shopping-list-form__actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .shopping-list-form__btn {
+    width: 100%;
+  }
+}
+
