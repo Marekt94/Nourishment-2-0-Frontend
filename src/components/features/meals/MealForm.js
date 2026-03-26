@@ -155,7 +155,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
         return {
           calories: totals.calories + (p.kcalPer100 || 0) * factor,
           proteins: totals.proteins + (p.proteins || 0) * factor,
-          carbs: totals.carbs + (p.carbohydrates || p.sugarAndCarb || 0) * factor,
+          carbs: totals.carbs + (p.sugarAndCarb || ((p.sugar || 0) + (p.carbohydrates || 0))) * factor,
           fats: totals.fats + (p.fat || 0) * factor,
         };
       },
@@ -266,7 +266,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
                   <span className="meal-form__product-macros">
                     🔥 {(((item.product.kcalPer100 || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(0)} kcal | 
                     B: {(((item.product.proteins || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g | 
-                    W: {(((item.product.carbohydrates || item.product.sugarAndCarb || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g | 
+                    W: {(((item.product.sugarAndCarb || ((item.product.sugar || 0) + (item.product.carbohydrates || 0))) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g | 
                     T: {(((item.product.fat || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g
                   </span>
                 </div>

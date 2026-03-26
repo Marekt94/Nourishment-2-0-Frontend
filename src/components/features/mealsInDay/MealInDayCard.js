@@ -36,7 +36,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
 
           const kcal = product.kcalPer100 || 0;
           const proteins = product.proteins || 0;
-          const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+          const carbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
           const fats = product.fat || 0;
 
           totals.calories += (kcal * weight * factor) / 100;
@@ -51,7 +51,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
     looseProducts.forEach(({ product, weight }) => {
       const kcal = product.kcalPer100 || 0;
       const proteins = product.proteins || 0;
-      const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+      const carbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
       const fats = product.fat || 0;
 
       totals.calories += (kcal * weight) / 100;
@@ -91,7 +91,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
 
         const kcal = product.kcalPer100 || 0;
         const proteins = product.proteins || 0;
-        const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+        const carbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
         const fats = product.fat || 0;
 
         mealMacros.calories += (kcal * weight * factor) / 100;
@@ -219,7 +219,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
                 const weight = lp.weight;
                 const kcal = ((product.kcalPer100 || 0) * weight) / 100;
                 const proteins = ((product.proteins || 0) * weight) / 100;
-                const carbs = ((product.carbohydrates || product.sugarAndCarb || 0) * weight) / 100;
+                const carbs = ((product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0))) * weight) / 100;
                 const fats = ((product.fat || 0) * weight) / 100;
 
                 return (

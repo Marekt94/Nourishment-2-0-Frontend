@@ -33,7 +33,7 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
         return {
           calories: totals.calories + (product.kcalPer100 || 0) * factor,
           proteins: totals.proteins + (product.proteins || 0) * factor,
-          carbs: totals.carbs + (product.carbohydrates || 0) * factor,
+          carbs: totals.carbs + (product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0))) * factor,
           fat: totals.fat + (product.fat || 0) * factor,
         };
       },
@@ -123,7 +123,7 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
                     <div className="meal-card__product-macros">
                       <span>🔥 {Math.round(((item.product?.kcalPer100 || 0) * (item.weight || 100)) / 100)} kcal</span>
                       <span>💪 {Math.round(((item.product?.proteins || 0) * (item.weight || 100)) / 100)}g</span>
-                      <span>🍞 {Math.round(((item.product?.carbohydrates || 0) * (item.weight || 100)) / 100)}g</span>
+                      <span>🍞 {Math.round(((item.product?.sugarAndCarb || ((item.product?.sugar || 0) + (item.product?.carbohydrates || 0))) * (item.weight || 100)) / 100)}g</span>
                       <span>🥑 {Math.round(((item.product?.fat || 0) * (item.weight || 100)) / 100)}g</span>
                     </div>
                   </div>

@@ -328,7 +328,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
 
             const kcal = product.kcalPer100 || 0;
             const proteins = product.proteins || 0;
-            const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+            const carbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
             const fats = product.fat || 0;
 
             return {
@@ -356,7 +356,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       (totals, { product, weight }) => {
         const kcal = product.kcalPer100 || 0;
         const proteins = product.proteins || 0;
-        const carbs = product.carbohydrates || product.sugarAndCarb || 0;
+        const carbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
         const fats = product.fat || 0;
 
         return {
@@ -683,7 +683,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                   <span className="meal-in-day-form__loose-product-macros">
                     {(((lp.product.kcalPer100 || 0) * lp.weight) / 100).toFixed(0)} kcal | B:{" "}
                     {(((lp.product.proteins || 0) * lp.weight) / 100).toFixed(1)}g | W:{" "}
-                    {(((lp.product.carbohydrates || lp.product.sugarAndCarb || 0) * lp.weight) / 100).toFixed(1)}g | T:{" "}
+                    {(((lp.product.sugarAndCarb || ((lp.product.sugar || 0) + (lp.product.carbohydrates || 0))) * lp.weight) / 100).toFixed(1)}g | T:{" "}
                     {(((lp.product.fat || 0) * lp.weight) / 100).toFixed(1)}g
                   </span>
                 </div>
