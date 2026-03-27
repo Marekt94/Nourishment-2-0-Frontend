@@ -77,7 +77,6 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
       const initialQuantity = unitWeight > 0 ? +(initialWeight / unitWeight).toFixed(3) : "";
 
       setProductsInMeal((prev) => [
-        ...prev,
         {
           id: null,
           tempId: String(Date.now() + Math.random()),
@@ -85,6 +84,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
           weight: initialWeight,
           quantity: initialQuantity,
         },
+        ...prev,
       ]);
       setProductSearchTerm("");
       setHighlightedProductIndex(0);

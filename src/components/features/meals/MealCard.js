@@ -116,18 +116,38 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
             <div className="meal-card__details-section">
               <h4 className="meal-card__details-title">Produkty w posiłku</h4>
               <div className="meal-card__products-list">
-                {meal.productsInMeal.map((item, index) => (
-                  <div key={index} className="meal-card__product-item">
-                    <span className="meal-card__product-name">{item.product?.name || "Unknown Product"}</span>
-                    <span className="meal-card__product-weight">{item.weight || 100}g</span>
-                    <div className="meal-card__product-macros">
-                      <span>🔥 {Math.round(((item.product?.kcalPer100 || 0) * (item.weight || 100)) / 100)} kcal</span>
-                      <span>💪 {Math.round(((item.product?.proteins || 0) * (item.weight || 100)) / 100)}g</span>
-                      <span>🍞 {Math.round(((item.product?.sugarAndCarb || ((item.product?.sugar || 0) + (item.product?.carbohydrates || 0))) * (item.weight || 100)) / 100)}g</span>
-                      <span>🥑 {Math.round(((item.product?.fat || 0) * (item.weight || 100)) / 100)}g</span>
+                {meal.productsInMeal.map((item, index) => {
+                  const product = item.product || {};
+                  const weight = item.weight || 100;
+                  const unitWeight = product.weight > 0 ? product.weight : 0;
+                  
+                  // Format quantity: use 1 decimal if needed, else whole number. e.g. 1, 1.5, 0.5
+                  let quantityText = "";
+                  if (unitWeight > 0) {
+                    const qty = weight / unitWeight;
+                    // Fix to 2 decimals max and remove trailing zeros
+                    const formattedQty = parseFloat(qty.toFixed(2));
+                    quantityText = ` (${formattedQty} szt.)`;
+                  }
+
+                  return (
+                    <div key={index} className="meal-card__product-item">
+                      <span className="meal-card__product-name">
+                        {product.name || "Unknown Product"}
+                        <span style={{ color: "var(--color-primary-light)", fontSize: "0.9em", marginLeft: "4px" }}>
+                          {quantityText}
+                        </span>
+                      </span>
+                      <span className="meal-card__product-weight">{weight}g</span>
+                      <div className="meal-card__product-macros">
+                        <span>🔥 {Math.round(((product.kcalPer100 || 0) * weight) / 100)} kcal</span>
+                        <span>💪 {Math.round(((product.proteins || 0) * weight) / 100)}g</span>
+                        <span>🍞 {Math.round(((product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0))) * weight) / 100)}g</span>
+                        <span>🥑 {Math.round(((product.fat || 0) * weight) / 100)}g</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

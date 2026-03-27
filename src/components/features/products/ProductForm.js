@@ -276,7 +276,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
       <div className="product-form__row">
         <div className="product-form__group">
           <label className="product-form__label" htmlFor="weight">
-            Waga
+            Waga jednostki
           </label>
           <input
             type="number"

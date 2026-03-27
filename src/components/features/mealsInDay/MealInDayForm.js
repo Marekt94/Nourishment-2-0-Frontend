@@ -244,7 +244,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
         product: product,
         weight: 100, // Default weight
       };
-      setLooseProducts((prev) => [...prev, newLooseProduct]);
+      setLooseProducts((prev) => [newLooseProduct, ...prev]);
       setShowProductDropdown(false);
       setProductSearchTerm("");
       setHighlightedProductIndex(0);
