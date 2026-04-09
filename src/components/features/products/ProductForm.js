@@ -47,12 +47,12 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
     if (product) {
       // Handle category - it might be an object or just an ID
       let categoryValue = null;
-      if (product.category) {
-        if (typeof product.category === "object" && product.category.id) {
+      if (product.category != null) {
+        if (typeof product.category === "object" && product.category.id != null) {
           categoryValue = product.category;
         } else if (typeof product.category === "number") {
           // Find category by ID in loaded categories
-          categoryValue = categories.find((cat) => cat.id === product.category) || null;
+          categoryValue = categories.find((cat) => String(cat.id) === String(product.category)) || null;
         }
       }
 
@@ -77,7 +77,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
 
     // Special handling for category dropdown
     if (name === "category") {
-      const selectedCategory = categories.find((cat) => cat.id === parseInt(value));
+      const selectedCategory = categories.find((cat) => String(cat.id) === String(value));
       setFormData((prev) => ({
         ...prev,
         category: selectedCategory || null,
@@ -144,7 +144,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
             id="category"
             name="category"
             className="product-form__input"
-            value={formData.category?.id || ""}
+            value={formData.category?.id ?? ""}
             onChange={handleChange}
             disabled={isLoading || categoriesLoading}
           >
