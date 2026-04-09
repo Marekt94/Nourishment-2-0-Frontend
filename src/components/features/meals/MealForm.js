@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useProducts } from "../../../hooks/useProducts";
+import { ProductForm } from "../products/ProductForm";
 import "./MealForm.css";
 
 export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
@@ -15,6 +16,9 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
   const [productSearchTerm, setProductSearchTerm] = useState("");
   const [showProductDropdown, setShowProductDropdown] = useState(false);
   const [highlightedProductIndex, setHighlightedProductIndex] = useState(0);
+
+  const [showQuickProductModal, setShowQuickProductModal] = useState(false);
+  const [quickProductName, setQuickProductName] = useState("");
 
   // Populate form when editing
   useEffect(() => {
@@ -95,20 +99,53 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
 
   const handleProductSearchKeyDown = (e) => {
     const filtered = getFilteredProducts();
+    const hasAddOption = productSearchTerm.trim() !== "";
+    const totalOptions = filtered.length + (hasAddOption ? 1 : 0);
+
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setHighlightedProductIndex((prev) => Math.min(prev + 1, filtered.length - 1));
+      setHighlightedProductIndex((prev) => Math.min(prev + 1, totalOptions - 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setHighlightedProductIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Tab") {
+      if (hasAddOption) {
+        e.preventDefault();
+        setHighlightedProductIndex(filtered.length);
+      }
     } else if (e.key === "Enter") {
       e.preventDefault();
-      if (filtered[highlightedProductIndex]) {
-        handleAddProduct(filtered[highlightedProductIndex].id);
+      if (highlightedProductIndex < filtered.length) {
+        if (filtered[highlightedProductIndex]) {
+          handleAddProduct(filtered[highlightedProductIndex].id);
+        }
+      } else if (hasAddOption && highlightedProductIndex === filtered.length) {
+        setQuickProductName(productSearchTerm);
+        setShowProductDropdown(false);
+        setShowQuickProductModal(true);
       }
     } else if (e.key === "Escape") {
       setShowProductDropdown(false);
     }
+  };
+
+  const handleQuickProductSubmit = (newProductData) => {
+    const initialWeight = 100;
+    const unitWeight = newProductData.weight > 0 ? newProductData.weight : 0;
+    const initialQuantity = unitWeight > 0 ? +(initialWeight / unitWeight).toFixed(3) : "";
+
+    setProductsInMeal((prev) => [
+      {
+        id: null,
+        tempId: String(Date.now() + Math.random()),
+        product: newProductData,
+        weight: initialWeight,
+        quantity: initialQuantity,
+      },
+      ...prev,
+    ]);
+    setShowQuickProductModal(false);
+    setProductSearchTerm("");
   };
 
   const handleRemoveProduct = (tempId) => {
@@ -188,7 +225,8 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
   const totals = calculateTotalMacros();
 
   return (
-    <form className="meal-form" onSubmit={handleSubmit}>
+    <>
+      <form className="meal-form" onSubmit={handleSubmit}>
       <h3 className="meal-form__title">{meal ? "✏️ Edytuj potrawę" : "➕ Utwórz nową potrawę"}</h3>
 
       <div className="meal-form__section">
@@ -232,23 +270,45 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
                 <div className="meal-form__dropdown-item meal-form__dropdown-item--disabled">
                   Ładowanie produktów...
                 </div>
-              ) : getFilteredProducts().length === 0 ? (
-                <div className="meal-form__dropdown-item meal-form__dropdown-item--disabled">
-                  Brak produktów
-                </div>
               ) : (
-                getFilteredProducts().map((product, idx) => (
-                  <div
-                    key={product.id}
-                    className={`meal-form__dropdown-item ${
-                      idx === highlightedProductIndex ? "meal-form__dropdown-item--highlighted" : ""
-                    }`}
-                    onMouseEnter={() => setHighlightedProductIndex(idx)}
-                    onClick={() => handleAddProduct(product.id)}
-                  >
-                    {product.name}
-                  </div>
-                ))
+                <>
+                  {getFilteredProducts().length === 0 ? (
+                    <div className="meal-form__dropdown-item meal-form__dropdown-item--disabled">
+                      Brak produktów
+                    </div>
+                  ) : (
+                    getFilteredProducts().map((product, idx) => (
+                      <div
+                        key={product.id}
+                        className={`meal-form__dropdown-item ${
+                          idx === highlightedProductIndex ? "meal-form__dropdown-item--highlighted" : ""
+                        }`}
+                        onMouseEnter={() => setHighlightedProductIndex(idx)}
+                        onClick={() => handleAddProduct(product.id)}
+                      >
+                        {product.name}
+                      </div>
+                    ))
+                  )}
+                  {productSearchTerm.trim() !== "" && (
+                    <div
+                      className={`meal-form__dropdown-item ${
+                        highlightedProductIndex === getFilteredProducts().length
+                          ? "meal-form__dropdown-item--highlighted"
+                          : ""
+                      }`}
+                      style={{ borderTop: "1px solid #e5e7eb", color: "#3b82f6", fontWeight: "600" }}
+                      onMouseEnter={() => setHighlightedProductIndex(getFilteredProducts().length)}
+                      onClick={() => {
+                        setQuickProductName(productSearchTerm);
+                        setShowProductDropdown(false);
+                        setShowQuickProductModal(true);
+                      }}
+                    >
+                      ➕ Utwórz nowy produkt: {productSearchTerm}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -368,5 +428,19 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
         </button>
       </div>
     </form>
+
+      {showQuickProductModal && (
+        <div className="meal-form__modal-overlay" onClick={() => setShowQuickProductModal(false)}>
+          <div className="meal-form__modal-content" onClick={(e) => e.stopPropagation()}>
+            <ProductForm
+              product={{ name: quickProductName }}
+              onSubmit={handleQuickProductSubmit}
+              onCancel={() => setShowQuickProductModal(false)}
+              isLoading={false}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
