@@ -167,6 +167,7 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
           placeholder="np. Zakupy na tydzień"
           className="shopping-list-form__input"
           required
+          autoFocus
         />
       </div>
 

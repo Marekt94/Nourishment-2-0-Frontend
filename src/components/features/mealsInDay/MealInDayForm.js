@@ -511,6 +511,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
               placeholder="np. Plan standard, Plan wysokobiałkowy..."
               className="meal-in-day-form__input"
               required
+              autoFocus
             />
           </div>
         </div>

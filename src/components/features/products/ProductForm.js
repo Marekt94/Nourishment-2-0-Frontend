@@ -133,6 +133,7 @@ export const ProductForm = ({ product, onSubmit, onCancel, isLoading }) => {
             required
             disabled={isLoading}
             placeholder="np. Pierś z kurczaka"
+            autoFocus
           />
         </div>
 

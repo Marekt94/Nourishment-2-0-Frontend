@@ -202,6 +202,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
           placeholder="np. Owsianka z owocami"
           required
           disabled={isLoading}
+          autoFocus
         />
       </div>
 
