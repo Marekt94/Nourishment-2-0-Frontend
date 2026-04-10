@@ -62,6 +62,15 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
   const [openDropdown, setOpenDropdown] = useState(null);
   // Index of highlighted item in dropdown (-1 = none)
   const [highlightedIndex, setHighlightedIndex] = useState(0);
+  
+  // Expanded products preview state
+  const [expandedPreviews, setExpandedPreviews] = useState({});
+  const togglePreview = (mealSlot) => {
+    setExpandedPreviews(prev => ({
+      ...prev,
+      [mealSlot]: !prev[mealSlot]
+    }));
+  };
 
   // Loose products state
   const [looseProducts, setLooseProducts] = useState([]);
@@ -210,15 +219,25 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setHighlightedIndex((prev) => Math.max(prev - 1, 0));
-    } else if (e.key === "Enter") {
+    } else if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
       if (filtered[highlightedIndex]) {
         handleMealSelect(mealSlot, filtered[highlightedIndex].id);
-        openNextSlot(mealSlot);
+      } else {
+        setOpenDropdown(null);
       }
-    } else if (e.key === "Escape" || e.key === "Tab") {
+      setTimeout(() => {
+        const factorInput = document.getElementById(`factor-${mealSlot}`);
+        if (factorInput) {
+          factorInput.focus();
+          factorInput.select();
+        } else {
+          openNextSlot(mealSlot);
+        }
+      }, 50);
+    } else if (e.key === "Escape") {
       e.preventDefault();
-      openNextSlot(mealSlot);
+      setOpenDropdown(null);
     }
   };
 
@@ -395,17 +414,16 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       return;
     }
 
-    // Factors are always 1.0 — feature not yet used on backend
     const submitData = {
       ...(formData.id && { id: formData.id }),
       name: formData.name.trim(),
       for5Days: formData.for5Days,
-      factorBreakfast: 1.0,
-      factorSecondBreakfast: 1.0,
-      factorLunch: 1.0,
-      factorAfternoonSnack: 1.0,
-      factorDinner: 1.0,
-      factorSupper: 1.0,
+      factorBreakfast: parseFloat(formData.factorBreakfast) || 1.0,
+      factorSecondBreakfast: parseFloat(formData.factorSecondBreakfast) || 1.0,
+      factorLunch: parseFloat(formData.factorLunch) || 1.0,
+      factorAfternoonSnack: parseFloat(formData.factorAfternoonSnack) || 1.0,
+      factorDinner: parseFloat(formData.factorDinner) || 1.0,
+      factorSupper: parseFloat(formData.factorSupper) || 1.0,
     };
 
     // Include only selected meals as {id} objects.
@@ -607,7 +625,96 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                       </div>
                     )}
                   </div>
+                  
+                  {formData[key] && (
+                    <div className="meal-in-day-form__factor-control">
+                      <span className="meal-in-day-form__factor-label">Wielkość:</span>
+                      <input
+                        type="number"
+                        id={`factor-${key}`}
+                        step="0.1"
+                        min="0"
+                        name={factorKey}
+                        value={formData[factorKey]}
+                        onChange={handleInputChange}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Tab' && !e.shiftKey) {
+                            e.preventDefault();
+                            openNextSlot(key);
+                          }
+                        }}
+                        className="meal-in-day-form__factor-input"
+                      />
+                      <span className="meal-in-day-form__factor-unit">x</span>
+                    </div>
+                  )}
                 </div>
+
+                {formData[key] && meals.find(m => m.id === formData[key])?.productsInMeal?.length > 0 && (() => {
+                  const meal = meals.find(m => m.id === formData[key]);
+                  const factor = formData[factorKey] || 1.0;
+                  
+                  // Calculate scaled macros
+                  let calories = 0, proteins = 0, carbs = 0, fats = 0;
+                  meal.productsInMeal.forEach(item => {
+                    const weight = item.weight || 100;
+                    const product = item.product || {};
+                    const pKcal = product.kcalPer100 || 0;
+                    const pProt = product.proteins || 0;
+                    const pCarbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
+                    const pFats = product.fat || 0;
+                    
+                    calories += (pKcal * weight * factor) / 100;
+                    proteins += (pProt * weight * factor) / 100;
+                    carbs += (pCarbs * weight * factor) / 100;
+                    fats += (pFats * weight * factor) / 100;
+                  });
+
+                  return (
+                    <div className="meal-in-day-form__meal-info-container">
+                      <div className="meal-in-day-form__preview-macros">
+                        <div className="meal-in-day-form__preview-macro-item">
+                          <span className="icon">🔥</span>
+                          <span>{calories.toFixed(0)} kcal</span>
+                        </div>
+                        <div className="meal-in-day-form__preview-macro-item">
+                          <span className="icon">🥩</span>
+                          <span>B: {proteins.toFixed(1)}g</span>
+                        </div>
+                        <div className="meal-in-day-form__preview-macro-item">
+                          <span className="icon">🍞</span>
+                          <span>W: {carbs.toFixed(1)}g</span>
+                        </div>
+                        <div className="meal-in-day-form__preview-macro-item">
+                          <span className="icon">🥑</span>
+                          <span>T: {fats.toFixed(1)}g</span>
+                        </div>
+                        
+                        <button 
+                          className="meal-in-day-form__preview-toggle" 
+                          type="button" 
+                          onClick={() => togglePreview(key)}
+                        >
+                          {expandedPreviews[key] ? 'Ukryj składniki ▲' : 'Pokaż składniki ▼'}
+                        </button>
+                      </div>
+
+                      {expandedPreviews[key] && (
+                        <div className="meal-in-day-form__meal-products-preview">
+                          {meal.productsInMeal.map(item => {
+                            const adjWeight = (item.weight || 100) * factor;
+                            return (
+                              <div key={item.id} className="meal-in-day-form__preview-row">
+                                <span className="meal-in-day-form__preview-name">{item.product.name}</span>
+                                <span className="meal-in-day-form__preview-weight">{adjWeight.toFixed(0)}g</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             ))}
           </div>

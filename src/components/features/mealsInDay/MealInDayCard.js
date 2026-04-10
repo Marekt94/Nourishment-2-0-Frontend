@@ -121,7 +121,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
             {meal.productsInMeal.map((item) => (
               <div key={item.id} className="meal-in-day-card__product">
                 <span className="meal-in-day-card__product-name">{item.product.name}</span>
-                <span className="meal-in-day-card__product-weight">{item.weight}g</span>
+                <span className="meal-in-day-card__product-weight">{(item.weight * factor).toFixed(0)}g</span>
               </div>
             ))}
           </div>
