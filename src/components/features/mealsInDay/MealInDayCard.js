@@ -25,7 +25,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
       { meal: mealInDay.supper, factor: mealInDay.factorSupper || 1.0 },
     ];
 
-    let totals = { calories: 0, proteins: 0, carbs: 0, fats: 0 };
+    let totals = { calories: 0, proteins: 0, carbs: 0, fats: 0, fiber: 0 };
 
     // Add macros from meals
     meals.forEach(({ meal, factor }) => {
@@ -38,11 +38,13 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
           const proteins = product.proteins || 0;
           const carbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
           const fats = product.fat || 0;
+          const fiber = product.fiber || 0;
 
           totals.calories += (kcal * weight * factor) / 100;
           totals.proteins += (proteins * weight * factor) / 100;
           totals.carbs += (carbs * weight * factor) / 100;
           totals.fats += (fats * weight * factor) / 100;
+          totals.fiber += (fiber * weight * factor) / 100;
         });
       }
     });
@@ -53,11 +55,13 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
       const proteins = product.proteins || 0;
       const carbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
       const fats = product.fat || 0;
+      const fiber = product.fiber || 0;
 
       totals.calories += (kcal * weight) / 100;
       totals.proteins += (proteins * weight) / 100;
       totals.carbs += (carbs * weight) / 100;
       totals.fats += (fats * weight) / 100;
+      totals.fiber += (fiber * weight) / 100;
     });
 
     return totals;
@@ -71,6 +75,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
     proteins: totalMacros?.proteins || 0,
     carbs: totalMacros?.carbs || 0,
     fats: totalMacros?.fats || 0,
+    fiber: totalMacros?.fiber || 0,
   };
 
   const toggleExpand = () => {
@@ -83,7 +88,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
     const factor = factorRaw || 1.0;
 
     // Calculate meal macros
-    let mealMacros = { calories: 0, proteins: 0, carbs: 0, fats: 0 };
+    let mealMacros = { calories: 0, proteins: 0, carbs: 0, fats: 0, fiber: 0 };
     if (meal.productsInMeal && meal.productsInMeal.length > 0) {
       meal.productsInMeal.forEach((item) => {
         const weight = item.weight || 100;
@@ -93,11 +98,13 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
         const proteins = product.proteins || 0;
         const carbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
         const fats = product.fat || 0;
+        const fiber = product.fiber || 0;
 
         mealMacros.calories += (kcal * weight * factor) / 100;
         mealMacros.proteins += (proteins * weight * factor) / 100;
         mealMacros.carbs += (carbs * weight * factor) / 100;
         mealMacros.fats += (fats * weight * factor) / 100;
+        mealMacros.fiber += (fiber * weight * factor) / 100;
       });
     }
 
@@ -114,6 +121,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
             <span className="meal-in-day-card__meal-macro">🥩 {mealMacros.proteins.toFixed(1)}g</span>
             <span className="meal-in-day-card__meal-macro">🍞 {mealMacros.carbs.toFixed(1)}g</span>
             <span className="meal-in-day-card__meal-macro">🥑 {mealMacros.fats.toFixed(1)}g</span>
+            {mealMacros.fiber > 0 && <span className="meal-in-day-card__meal-macro">🌾 {mealMacros.fiber.toFixed(1)}g</span>}
           </div>
         </div>
         {meal.productsInMeal && meal.productsInMeal.length > 0 && (
@@ -124,6 +132,12 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
                 <span className="meal-in-day-card__product-weight">{(item.weight * factor).toFixed(0)}g</span>
               </div>
             ))}
+          </div>
+        )}
+        {meal.recipe && (
+          <div className="meal-in-day-card__recipe">
+            <h5 className="meal-in-day-card__recipe-title">Przepis:</h5>
+            <p className="meal-in-day-card__recipe-text">{meal.recipe}</p>
           </div>
         )}
       </div>
@@ -221,6 +235,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
                 const proteins = ((product.proteins || 0) * weight) / 100;
                 const carbs = ((product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0))) * weight) / 100;
                 const fats = ((product.fat || 0) * weight) / 100;
+                const fiber = ((product.fiber || 0) * weight) / 100;
 
                 return (
                   <div key={lp.id} className="meal-in-day-card__loose-product">
@@ -233,6 +248,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
                       <span className="meal-in-day-card__loose-product-macro">🥩 B: {proteins.toFixed(1)}g</span>
                       <span className="meal-in-day-card__loose-product-macro">🍞 W: {carbs.toFixed(1)}g</span>
                       <span className="meal-in-day-card__loose-product-macro">🥑 T: {fats.toFixed(1)}g</span>
+                      {fiber > 0 && <span className="meal-in-day-card__loose-product-macro">🌾 Bł: {fiber.toFixed(1)}g</span>}
                     </div>
                   </div>
                 );
@@ -259,6 +275,10 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
               <div className="meal-in-day-card__macro-item">
                 <span className="meal-in-day-card__macro-label">Tłuszcze:</span>
                 <span className="meal-in-day-card__macro-value">{safeMacros.fats.toFixed(1)}g</span>
+              </div>
+              <div className="meal-in-day-card__macro-item">
+                <span className="meal-in-day-card__macro-label">Błonnik:</span>
+                <span className="meal-in-day-card__macro-value">{safeMacros.fiber.toFixed(1)}g</span>
               </div>
             </div>
           </div>

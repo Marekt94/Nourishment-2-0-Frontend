@@ -355,9 +355,10 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
               proteins: sum.proteins + (proteins * weight) / 100,
               carbs: sum.carbs + (carbs * weight) / 100,
               fats: sum.fats + (fats * weight) / 100,
+              fiber: sum.fiber + ((product.fiber || 0) * weight) / 100,
             };
           },
-          { calories: 0, proteins: 0, carbs: 0, fats: 0 },
+          { calories: 0, proteins: 0, carbs: 0, fats: 0, fiber: 0 },
         );
 
         return {
@@ -365,9 +366,10 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
           proteins: totals.proteins + mealMacros.proteins * factor,
           carbs: totals.carbs + mealMacros.carbs * factor,
           fats: totals.fats + mealMacros.fats * factor,
+          fiber: totals.fiber + mealMacros.fiber * factor,
         };
       },
-      { calories: 0, proteins: 0, carbs: 0, fats: 0 },
+      { calories: 0, proteins: 0, carbs: 0, fats: 0, fiber: 0 },
     );
 
     // Add macros from loose products
@@ -383,9 +385,10 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
           proteins: totals.proteins + (proteins * weight) / 100,
           carbs: totals.carbs + (carbs * weight) / 100,
           fats: totals.fats + (fats * weight) / 100,
+          fiber: totals.fiber + ((product.fiber || 0) * weight) / 100,
         };
       },
-      { calories: 0, proteins: 0, carbs: 0, fats: 0 },
+      { calories: 0, proteins: 0, carbs: 0, fats: 0, fiber: 0 },
     );
 
     // Combine both
@@ -394,6 +397,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
       proteins: mealTotals.proteins + looseProductTotals.proteins,
       carbs: mealTotals.carbs + looseProductTotals.carbs,
       fats: mealTotals.fats + looseProductTotals.fats,
+      fiber: mealTotals.fiber + looseProductTotals.fiber,
     };
   };
 
@@ -655,7 +659,7 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                   const factor = formData[factorKey] || 1.0;
                   
                   // Calculate scaled macros
-                  let calories = 0, proteins = 0, carbs = 0, fats = 0;
+                  let calories = 0, proteins = 0, carbs = 0, fats = 0, fiber = 0;
                   meal.productsInMeal.forEach(item => {
                     const weight = item.weight || 100;
                     const product = item.product || {};
@@ -663,11 +667,13 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                     const pProt = product.proteins || 0;
                     const pCarbs = product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0));
                     const pFats = product.fat || 0;
+                    const pFiber = product.fiber || 0;
                     
                     calories += (pKcal * weight * factor) / 100;
                     proteins += (pProt * weight * factor) / 100;
                     carbs += (pCarbs * weight * factor) / 100;
                     fats += (pFats * weight * factor) / 100;
+                    fiber += (pFiber * weight * factor) / 100;
                   });
 
                   return (
@@ -689,6 +695,12 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                           <span className="icon">🥑</span>
                           <span>T: {fats.toFixed(1)}g</span>
                         </div>
+                        {fiber > 0 && (
+                          <div className="meal-in-day-form__preview-macro-item">
+                            <span className="icon">🌾</span>
+                            <span>Bł: {fiber.toFixed(1)}g</span>
+                          </div>
+                        )}
                         
                         <button 
                           className="meal-in-day-form__preview-toggle" 
@@ -792,7 +804,8 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
                     {(((lp.product.kcalPer100 || 0) * lp.weight) / 100).toFixed(0)} kcal | B:{" "}
                     {(((lp.product.proteins || 0) * lp.weight) / 100).toFixed(1)}g | W:{" "}
                     {(((lp.product.sugarAndCarb || ((lp.product.sugar || 0) + (lp.product.carbohydrates || 0))) * lp.weight) / 100).toFixed(1)}g | T:{" "}
-                    {(((lp.product.fat || 0) * lp.weight) / 100).toFixed(1)}g
+                    {(((lp.product.fat || 0) * lp.weight) / 100).toFixed(1)}g | Bł:{" "}
+                    {(((lp.product.fiber || 0) * lp.weight) / 100).toFixed(1)}g
                   </span>
                 </div>
                 <div className="meal-in-day-form__loose-product-controls">
@@ -848,6 +861,10 @@ export const MealInDayForm = ({ mealInDay, onSubmit, onCancel, onSuccess, onErro
           <div className="meal-in-day-form__macro">
             <span className="meal-in-day-form__macro-label">Tłuszcze</span>
             <span className="meal-in-day-form__macro-value">{totalMacros.fats.toFixed(1)}g</span>
+          </div>
+          <div className="meal-in-day-form__macro">
+            <span className="meal-in-day-form__macro-label">Błonnik</span>
+            <span className="meal-in-day-form__macro-value">{totalMacros.fiber.toFixed(1)}g</span>
           </div>
         </div>
       </div>

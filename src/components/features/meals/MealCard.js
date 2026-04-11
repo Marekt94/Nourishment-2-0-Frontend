@@ -35,9 +35,10 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
           proteins: totals.proteins + (product.proteins || 0) * factor,
           carbs: totals.carbs + (product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0))) * factor,
           fat: totals.fat + (product.fat || 0) * factor,
+          fiber: (totals.fiber || 0) + (product.fiber || 0) * factor,
         };
       },
-      { calories: 0, proteins: 0, carbs: 0, fat: 0 },
+      { calories: 0, proteins: 0, carbs: 0, fat: 0, fiber: 0 },
     );
   };
 
@@ -70,6 +71,10 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
           <div className="meal-card__macro-compact">
             <span className="meal-card__macro-label">Tłuszcze</span>
             <span className="meal-card__macro-value">{Math.round(macros.fat)}g</span>
+          </div>
+          <div className="meal-card__macro-compact">
+            <span className="meal-card__macro-label">Błonnik</span>
+            <span className="meal-card__macro-value">{Math.round(macros.fiber || 0)}g</span>
           </div>
 
           <div className="meal-card__compact-actions">
@@ -144,6 +149,7 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
                         <span>💪 {Math.round(((product.proteins || 0) * weight) / 100)}g</span>
                         <span>🍞 {Math.round(((product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0))) * weight) / 100)}g</span>
                         <span>🥑 {Math.round(((product.fat || 0) * weight) / 100)}g</span>
+                        {product.fiber > 0 && <span>🌾 {Math.round(((product.fiber || 0) * weight) / 100)}g</span>}
                       </div>
                     </div>
                   );
@@ -183,6 +189,11 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
                 <span className="meal-card__detail-icon">🥑</span>
                 <span className="meal-card__detail-label">Tłuszcze</span>
                 <span className="meal-card__detail-value">{Math.round(macros.fat)}g</span>
+              </div>
+              <div className="meal-card__detail-item">
+                <span className="meal-card__detail-icon">🌾</span>
+                <span className="meal-card__detail-label">Błonnik</span>
+                <span className="meal-card__detail-value">{Math.round(macros.fiber || 0)}g</span>
               </div>
             </div>
           </div>

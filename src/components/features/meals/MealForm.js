@@ -194,9 +194,10 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
           proteins: totals.proteins + (p.proteins || 0) * factor,
           carbs: totals.carbs + (p.sugarAndCarb || ((p.sugar || 0) + (p.carbohydrates || 0))) * factor,
           fats: totals.fats + (p.fat || 0) * factor,
+          fiber: totals.fiber + (p.fiber || 0) * factor,
         };
       },
-      { calories: 0, proteins: 0, carbs: 0, fats: 0 }
+      { calories: 0, proteins: 0, carbs: 0, fats: 0, fiber: 0 }
     );
   };
 
@@ -328,7 +329,8 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
                     🔥 {(((item.product.kcalPer100 || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(0)} kcal | 
                     B: {(((item.product.proteins || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g | 
                     W: {(((item.product.sugarAndCarb || ((item.product.sugar || 0) + (item.product.carbohydrates || 0))) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g | 
-                    T: {(((item.product.fat || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g
+                    T: {(((item.product.fat || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g | 
+                    Bł: {(((item.product.fiber || 0) * (parseFloat(item.weight) || 0)) / 100).toFixed(1)}g
                   </span>
                 </div>
                 <div className="meal-form__product-controls">
@@ -393,6 +395,10 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
           <div className="meal-form__macro-item">
             <span className="meal-form__macro-label">Tłuszcze</span>
             <span className="meal-form__macro-value">{totals.fats.toFixed(1)}g</span>
+          </div>
+          <div className="meal-form__macro-item">
+            <span className="meal-form__macro-label">Błonnik</span>
+            <span className="meal-form__macro-value">{totals.fiber.toFixed(1)}g</span>
           </div>
         </div>
       </div>

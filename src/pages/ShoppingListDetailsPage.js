@@ -178,16 +178,18 @@ export const ShoppingListDetailsPage = () => {
   };
 
   const calculateProgress = () => {
-    if (!list || !list.products || list.products.length === 0) return 0;
+    if (!list || !list.products || list.products.length === 0) return { percent: 0, remaining: 0 };
     const boughtCount = list.products.filter(p => p.bought).length;
-    return Math.round((boughtCount / list.products.length) * 100);
+    const remainingCount = list.products.length - boughtCount;
+    const percent = Math.round((boughtCount / list.products.length) * 100);
+    return { percent, remaining: remainingCount };
   };
 
   if (isLoading) return <div className="shopping-list-details__loading">Ładowanie...</div>;
   if (error) return <div className="shopping-list-details__error">Błąd: {error}</div>;
   if (!list) return <div className="shopping-list-details__not-found">Nie znaleziono listy.</div>;
   
-  const progress = calculateProgress();
+  const { percent: progress, remaining } = calculateProgress();
 
   return (
     <div className="shopping-list-details">
@@ -209,7 +211,9 @@ export const ShoppingListDetailsPage = () => {
 
         <div className="shopping-list-details__progress-container">
             <div className="shopping-list-details__progress-bar" style={{ width: `${progress}%` }}></div>
-            <span className="shopping-list-details__progress-text">{progress}% kupione</span>
+            <span className="shopping-list-details__progress-text">
+              {progress}% kupione • Pozostało: {remaining}
+            </span>
         </div>
 
         <div className="shopping-list-details__content">
@@ -237,15 +241,20 @@ export const ShoppingListDetailsPage = () => {
                       {!isCollapsed && (
                         <ul className="shopping-list-details__products">
                             {groupedProducts[category].map((item) => (
-                                <li key={item.id} className={`shopping-list-details__product ${item.bought ? 'shopping-list-details__product--bought' : ''}`}>
-                                    <label className="shopping-list-details__checkbox-container">
+                                <li 
+                                    key={item.id} 
+                                    className={`shopping-list-details__product ${item.bought ? 'shopping-list-details__product--bought' : ''}`}
+                                    onClick={() => toggleBought(item)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <div className="shopping-list-details__checkbox-container">
                                         <input
                                             type="checkbox"
                                             checked={item.bought}
-                                            onChange={() => toggleBought(item)}
+                                            readOnly
                                         />
                                         <span className="shopping-list-details__checkmark"></span>
-                                    </label>
+                                    </div>
                                     <div className="shopping-list-details__product-info">
                                         <span className="shopping-list-details__product-name">{item.productName}</span>
                                         <div className="shopping-list-details__product-amount">

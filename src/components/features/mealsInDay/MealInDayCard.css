@@ -253,6 +253,27 @@
   color: #999;
 }
 
+.meal-in-day-card__recipe {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #e0e0e0;
+}
+
+.meal-in-day-card__recipe-title {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.meal-in-day-card__recipe-text {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
 /* Loose Products */
 .meal-in-day-card__loose-products {
   margin-top: 20px;
