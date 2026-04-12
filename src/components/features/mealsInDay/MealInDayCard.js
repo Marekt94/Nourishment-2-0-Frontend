@@ -118,7 +118,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
           </div>
           <div className="meal-in-day-card__meal-macros-summary">
             <span className="meal-in-day-card__meal-macro">🔥 {mealMacros.calories.toFixed(0)} kcal</span>
-            <span className="meal-in-day-card__meal-macro">🥩 {mealMacros.proteins.toFixed(1)}g</span>
+            <span className="meal-in-day-card__meal-macro">💪 {mealMacros.proteins.toFixed(1)}g</span>
             <span className="meal-in-day-card__meal-macro">🍞 {mealMacros.carbs.toFixed(1)}g</span>
             <span className="meal-in-day-card__meal-macro">🥑 {mealMacros.fats.toFixed(1)}g</span>
             {mealMacros.fiber > 0 && <span className="meal-in-day-card__meal-macro">🌾 {mealMacros.fiber.toFixed(1)}g</span>}
@@ -164,33 +164,25 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
           {mealInDay.for5Days && <span className="meal-in-day-card__badge">📅 5 dni</span>}
         </div>
         <div className="meal-in-day-card__summary">
-          <div className="meal-in-day-card__summary-item meal-in-day-card__summary-item--calories">
-            <span className="meal-in-day-card__summary-icon">🔥</span>
-            <div className="meal-in-day-card__summary-content">
-              <span className="meal-in-day-card__summary-value">{safeMacros.calories.toFixed(0)}</span>
-              <span className="meal-in-day-card__summary-unit">kcal</span>
-            </div>
+          <div className="meal-in-day-card__macro-compact">
+            <span className="meal-in-day-card__macro-label">Kcal</span>
+            <span className="meal-in-day-card__macro-value">{safeMacros.calories.toFixed(0)}</span>
           </div>
-          <div className="meal-in-day-card__summary-item meal-in-day-card__summary-item--protein">
-            <span className="meal-in-day-card__summary-icon">🥩</span>
-            <div className="meal-in-day-card__summary-content">
-              <span className="meal-in-day-card__summary-label">B</span>
-              <span className="meal-in-day-card__summary-value">{safeMacros.proteins.toFixed(1)}g</span>
-            </div>
+          <div className="meal-in-day-card__macro-compact">
+            <span className="meal-in-day-card__macro-label">Białko</span>
+            <span className="meal-in-day-card__macro-value">{safeMacros.proteins.toFixed(1)}g</span>
           </div>
-          <div className="meal-in-day-card__summary-item meal-in-day-card__summary-item--carbs">
-            <span className="meal-in-day-card__summary-icon">🍞</span>
-            <div className="meal-in-day-card__summary-content">
-              <span className="meal-in-day-card__summary-label">W</span>
-              <span className="meal-in-day-card__summary-value">{safeMacros.carbs.toFixed(1)}g</span>
-            </div>
+          <div className="meal-in-day-card__macro-compact">
+            <span className="meal-in-day-card__macro-label">Węgle</span>
+            <span className="meal-in-day-card__macro-value">{safeMacros.carbs.toFixed(1)}g</span>
           </div>
-          <div className="meal-in-day-card__summary-item meal-in-day-card__summary-item--fats">
-            <span className="meal-in-day-card__summary-icon">🥑</span>
-            <div className="meal-in-day-card__summary-content">
-              <span className="meal-in-day-card__summary-label">T</span>
-              <span className="meal-in-day-card__summary-value">{safeMacros.fats.toFixed(1)}g</span>
-            </div>
+          <div className="meal-in-day-card__macro-compact">
+            <span className="meal-in-day-card__macro-label">Tłuszcze</span>
+            <span className="meal-in-day-card__macro-value">{safeMacros.fats.toFixed(1)}g</span>
+          </div>
+          <div className="meal-in-day-card__macro-compact">
+            <span className="meal-in-day-card__macro-label">Błonnik</span>
+            <span className="meal-in-day-card__macro-value">{safeMacros.fiber.toFixed(1)}g</span>
           </div>
 
           <div className="meal-in-day-card__header-actions" onClick={(e) => e.stopPropagation()}>
@@ -263,10 +255,10 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
                     </div>
                     <div className="meal-in-day-card__loose-product-macros">
                       <span className="meal-in-day-card__loose-product-macro">🔥 {kcal.toFixed(0)} kcal</span>
-                      <span className="meal-in-day-card__loose-product-macro">🥩 B: {proteins.toFixed(1)}g</span>
-                      <span className="meal-in-day-card__loose-product-macro">🍞 W: {carbs.toFixed(1)}g</span>
-                      <span className="meal-in-day-card__loose-product-macro">🥑 T: {fats.toFixed(1)}g</span>
-                      {fiber > 0 && <span className="meal-in-day-card__loose-product-macro">🌾 Bł: {fiber.toFixed(1)}g</span>}
+                      <span className="meal-in-day-card__loose-product-macro">💪 {proteins.toFixed(1)}g</span>
+                      <span className="meal-in-day-card__loose-product-macro">🍞 {carbs.toFixed(1)}g</span>
+                      <span className="meal-in-day-card__loose-product-macro">🥑 {fats.toFixed(1)}g</span>
+                      {fiber > 0 && <span className="meal-in-day-card__loose-product-macro">🌾 {fiber.toFixed(1)}g</span>}
                     </div>
                   </div>
                 );
@@ -277,27 +269,34 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
           {/* Total Macros */}
           <div className="meal-in-day-card__total-macros">
             <h4>Łącznie:</h4>
-            <div className="meal-in-day-card__macros-grid">
-              <div className="meal-in-day-card__macro-item">
-                <span className="meal-in-day-card__macro-label">Kalorie:</span>
-                <span className="meal-in-day-card__macro-value">{safeMacros.calories.toFixed(0)} kcal</span>
+            <div className="meal-in-day-card__details-grid">
+              <div className="meal-in-day-card__detail-item">
+                <span className="meal-in-day-card__detail-icon">🔥</span>
+                <span className="meal-in-day-card__detail-label">Kalorie (całość)</span>
+                <span className="meal-in-day-card__detail-value">{safeMacros.calories.toFixed(0)} kcal</span>
               </div>
-              <div className="meal-in-day-card__macro-item">
-                <span className="meal-in-day-card__macro-label">Białko:</span>
-                <span className="meal-in-day-card__macro-value">{safeMacros.proteins.toFixed(1)}g</span>
+              <div className="meal-in-day-card__detail-item">
+                <span className="meal-in-day-card__detail-icon">💪</span>
+                <span className="meal-in-day-card__detail-label">Białko</span>
+                <span className="meal-in-day-card__detail-value">{safeMacros.proteins.toFixed(1)}g</span>
               </div>
-              <div className="meal-in-day-card__macro-item">
-                <span className="meal-in-day-card__macro-label">Węglowodany:</span>
-                <span className="meal-in-day-card__macro-value">{safeMacros.carbs.toFixed(1)}g</span>
+              <div className="meal-in-day-card__detail-item">
+                <span className="meal-in-day-card__detail-icon">🍞</span>
+                <span className="meal-in-day-card__detail-label">Węglowodany</span>
+                <span className="meal-in-day-card__detail-value">{safeMacros.carbs.toFixed(1)}g</span>
               </div>
-              <div className="meal-in-day-card__macro-item">
-                <span className="meal-in-day-card__macro-label">Tłuszcze:</span>
-                <span className="meal-in-day-card__macro-value">{safeMacros.fats.toFixed(1)}g</span>
+              <div className="meal-in-day-card__detail-item">
+                <span className="meal-in-day-card__detail-icon">🥑</span>
+                <span className="meal-in-day-card__detail-label">Tłuszcze</span>
+                <span className="meal-in-day-card__detail-value">{safeMacros.fats.toFixed(1)}g</span>
               </div>
-              <div className="meal-in-day-card__macro-item">
-                <span className="meal-in-day-card__macro-label">Błonnik:</span>
-                <span className="meal-in-day-card__macro-value">{safeMacros.fiber.toFixed(1)}g</span>
-              </div>
+              {safeMacros.fiber > 0 && (
+                <div className="meal-in-day-card__detail-item">
+                  <span className="meal-in-day-card__detail-icon">🌾</span>
+                  <span className="meal-in-day-card__detail-label">Błonnik</span>
+                  <span className="meal-in-day-card__detail-value">{safeMacros.fiber.toFixed(1)}g</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

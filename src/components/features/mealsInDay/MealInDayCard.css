@@ -66,76 +66,26 @@
   gap: 20px;
 }
 
-.meal-in-day-card__summary-item {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* centering item content */
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: transform 0.2s ease;
-  min-width: max-content;
-}
-
-.meal-in-day-card__summary-item:hover {
-  transform: translateY(-2px);
-}
-
-.meal-in-day-card__summary-item--calories {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-  color: white;
-  padding: 10px 16px;
-}
-
-.meal-in-day-card__summary-item--protein {
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-  color: white;
-}
-
-.meal-in-day-card__summary-item--carbs {
-  background: linear-gradient(135deg, #f7b731 0%, #f89e1b 100%);
-  color: white;
-}
-
-.meal-in-day-card__summary-item--fats {
-  background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
-  color: white;
-}
-
-.meal-in-day-card__summary-icon {
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-.meal-in-day-card__summary-content {
+.meal-in-day-card__macro-compact {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center; /* ensure column centers vertically */
-  gap: 2px;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 70px;
 }
 
-.meal-in-day-card__summary-label {
-  font-size: 10px;
-  font-weight: 600;
-  opacity: 0.8;
+.meal-in-day-card__macro-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
-.meal-in-day-card__summary-value {
-  font-size: 16px;
+.meal-in-day-card__macro-value {
+  font-size: 1rem;
   font-weight: 700;
-  line-height: 1;
-}
-
-.meal-in-day-card__summary-unit {
-  font-size: 11px;
-  font-weight: 600;
-  opacity: 0.9;
+  color: #1f2937;
 }
 
 .meal-in-day-card__expand-icon {
@@ -357,30 +307,44 @@
   color: #333;
 }
 
-.meal-in-day-card__macros-grid {
+.meal-in-day-card__details-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
-.meal-in-day-card__macro-item {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 16px;
-  border-radius: 8px;
+.meal-in-day-card__detail-item {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
 }
 
-.meal-in-day-card__macro-label {
-  font-size: 12px;
-  opacity: 0.9;
+.meal-in-day-card__detail-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.meal-in-day-card__macro-value {
-  font-size: 20px;
+.meal-in-day-card__detail-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.meal-in-day-card__detail-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  flex: 1;
+}
+
+.meal-in-day-card__detail-value {
+  font-size: 1rem;
   font-weight: 700;
+  color: #1f2937;
+  flex-shrink: 0;
 }
 
 /* Actions */
@@ -418,6 +382,17 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.meal-in-day-card__button--create-list {
+  background: #4caf50;
+  color: white;
+}
+
+.meal-in-day-card__button--create-list:hover {
+  background: #388e3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
 }
 
 .meal-in-day-card__button--edit {
@@ -462,14 +437,9 @@
     justify-content: space-between;
   }
 
-  .meal-in-day-card__summary-item {
-    flex: 1 1 45%;
-    min-width: 0;
-    padding: 6px 8px;
-  }
-
-  .meal-in-day-card__summary-item--calories {
-    flex-basis: 100%;
+  .meal-in-day-card__macro-compact {
+    flex: 1 1 40%;
+    min-width: auto;
   }
 
   .meal-in-day-card__header-actions {
@@ -489,7 +459,7 @@
     padding: 16px;
   }
 
-  .meal-in-day-card__macros-grid {
+  .meal-in-day-card__details-grid {
     grid-template-columns: 1fr;
   }
 
