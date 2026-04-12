@@ -126,12 +126,23 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
         </div>
         {meal.productsInMeal && meal.productsInMeal.length > 0 && (
           <div className="meal-in-day-card__products">
-            {meal.productsInMeal.map((item) => (
-              <div key={item.id} className="meal-in-day-card__product">
-                <span className="meal-in-day-card__product-name">{item.product.name}</span>
-                <span className="meal-in-day-card__product-weight">{(item.weight * factor).toFixed(0)}g</span>
-              </div>
-            ))}
+            {meal.productsInMeal.map((item) => {
+              const product = item.product || {};
+              const weight = item.weight || 0;
+              const unitWeight = product.weight || 0;
+              let quantityText = "";
+              if (unitWeight > 0) {
+                const qty = (weight * factor) / unitWeight;
+                const formattedQty = parseFloat(qty.toFixed(2));
+                quantityText = ` (${formattedQty} szt.)`;
+              }
+              return (
+                <div key={item.id} className="meal-in-day-card__product">
+                  <span className="meal-in-day-card__product-name">{product.name}</span>
+                  <span className="meal-in-day-card__product-weight">{(weight * factor).toFixed(0)}g{quantityText}</span>
+                </div>
+              );
+            })}
           </div>
         )}
         {meal.recipe && (
@@ -231,6 +242,13 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
               {looseProducts.map((lp) => {
                 const product = lp.product;
                 const weight = lp.weight;
+                const unitWeight = product.weight || 0;
+                let quantityText = "";
+                if (unitWeight > 0) {
+                  const qty = weight / unitWeight;
+                  const formattedQty = parseFloat(qty.toFixed(2));
+                  quantityText = ` (${formattedQty} szt.)`;
+                }
                 const kcal = ((product.kcalPer100 || 0) * weight) / 100;
                 const proteins = ((product.proteins || 0) * weight) / 100;
                 const carbs = ((product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0))) * weight) / 100;
@@ -241,7 +259,7 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
                   <div key={lp.id} className="meal-in-day-card__loose-product">
                     <div className="meal-in-day-card__loose-product-header">
                       <span className="meal-in-day-card__loose-product-name">{product.name}</span>
-                      <span className="meal-in-day-card__loose-product-weight">{weight}g</span>
+                      <span className="meal-in-day-card__loose-product-weight">{weight}g{quantityText}</span>
                     </div>
                     <div className="meal-in-day-card__loose-product-macros">
                       <span className="meal-in-day-card__loose-product-macro">🔥 {kcal.toFixed(0)} kcal</span>

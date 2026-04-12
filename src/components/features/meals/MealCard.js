@@ -139,11 +139,8 @@ export const MealCard = ({ meal, onEdit, onDelete }) => {
                     <div key={index} className="meal-card__product-item">
                       <span className="meal-card__product-name">
                         {product.name || "Unknown Product"}
-                        <span style={{ color: "var(--color-primary-light)", fontSize: "0.9em", marginLeft: "4px" }}>
-                          {quantityText}
-                        </span>
                       </span>
-                      <span className="meal-card__product-weight">{weight}g</span>
+                      <span className="meal-card__product-weight">{weight}g{quantityText}</span>
                       <div className="meal-card__product-macros">
                         <span>🔥 {Math.round(((product.kcalPer100 || 0) * weight) / 100)} kcal</span>
                         <span>💪 {Math.round(((product.proteins || 0) * weight) / 100)}g</span>
