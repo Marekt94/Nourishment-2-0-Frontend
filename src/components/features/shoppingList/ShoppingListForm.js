@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useProducts } from "../../../hooks/useProducts";
 import { useToast } from "../../../contexts/ToastContext";
+import { ProductForm } from "../products/ProductForm";
 import "./ShoppingListForm.css";
 
 export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, onError, isLoading }) => {
   const { addToast } = useToast();
   const { products, createProduct } = useProducts();
-  const [isCreatingProduct, setIsCreatingProduct] = useState(false);
+  const [showQuickProductModal, setShowQuickProductModal] = useState(false);
+  const [quickProductName, setQuickProductName] = useState("");
 
   const [formData, setFormData] = useState({
     id: null,
@@ -16,6 +18,7 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
 
   const [productSearchTerm, setProductSearchTerm] = useState("");
   const [showProductDropdown, setShowProductDropdown] = useState(false);
+  const [highlightedProductIndex, setHighlightedProductIndex] = useState(0);
 
   useEffect(() => {
     if (shoppingList) {
@@ -40,7 +43,11 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
 
   const getFilteredProducts = () => {
     const term = productSearchTerm.toLowerCase();
-    return products.filter(p => p.name?.toLowerCase().includes(term));
+    const availableProducts = products.filter(
+      (p) => !formData.products.some((fp) => fp.productId === p.id)
+    );
+    if (!term) return availableProducts;
+    return availableProducts.filter((product) => product.name?.toLowerCase().includes(term));
   };
 
   const handleAddProduct = (product) => {
@@ -57,36 +64,59 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
 
     setFormData(prev => ({
       ...prev,
-      products: [...prev.products, newProductEntry]
+      products: [newProductEntry, ...prev.products]
     }));
     setProductSearchTerm("");
+    setHighlightedProductIndex(0);
     setShowProductDropdown(false);
   };
 
-  const handleCreateNewProduct = async (name) => {
+  const handleProductSearchKeyDown = (e) => {
+    const filtered = getFilteredProducts();
+    const hasAddOption = productSearchTerm.trim() !== "";
+    const totalOptions = filtered.length + (hasAddOption ? 1 : 0);
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlightedProductIndex((prev) => Math.min(prev + 1, totalOptions - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlightedProductIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Tab") {
+      if (hasAddOption) {
+        e.preventDefault();
+        setHighlightedProductIndex(filtered.length);
+      }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlightedProductIndex < filtered.length) {
+        if (filtered[highlightedProductIndex]) {
+          handleAddProduct(filtered[highlightedProductIndex]);
+        }
+      } else if (hasAddOption && highlightedProductIndex === filtered.length) {
+        setQuickProductName(productSearchTerm);
+        setShowProductDropdown(false);
+        setShowQuickProductModal(true);
+      }
+    } else if (e.key === "Escape") {
+      setShowProductDropdown(false);
+    }
+  };
+
+  const handleCreateNewProduct = (name) => {
     if (!name.trim()) return;
-    setIsCreatingProduct(true);
+    setQuickProductName(name.trim());
+    setShowProductDropdown(false);
+    setShowQuickProductModal(true);
+  };
+
+  const handleQuickProductSubmit = async (newProductData) => {
     try {
-      const newProductData = {
-        name: name.trim(),
-        kcalPer100: 0,
-        weight: 100,
-        proteins: 0,
-        fat: 0,
-        sugar: 0,
-        carbohydrates: 0,
-        sugarAndCarb: 0,
-        fiber: 0,
-        salt: 0,
-        unit: "g",
-        category: { id: 1 }
-      };
       const created = await createProduct(newProductData);
       handleAddProduct(created);
+      setShowQuickProductModal(false);
     } catch (err) {
       addToast("Nie udało się utworzyć nowego produktu: " + err.message, "error");
-    } finally {
-      setIsCreatingProduct(false);
     }
   };
 
@@ -153,7 +183,8 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
   };
 
   return (
-    <form className="shopping-list-form" onSubmit={handleSubmit}>
+    <>
+      <form className="shopping-list-form" onSubmit={handleSubmit}>
       <h2 className="shopping-list-form__title">
         {shoppingList ? "Edytuj listę zakupów" : "Nowa lista zakupów"}
       </h2>
@@ -180,32 +211,53 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
             value={productSearchTerm}
             onChange={(e) => {
               setProductSearchTerm(e.target.value);
+              setHighlightedProductIndex(0);
               setShowProductDropdown(true);
             }}
+            onClick={() => setShowProductDropdown(true)}
             onFocus={() => setShowProductDropdown(true)}
-            onBlur={() => setTimeout(() => setShowProductDropdown(false), 200)}
+            onKeyDown={handleProductSearchKeyDown}
             className="shopping-list-form__input"
           />
-          {showProductDropdown && productSearchTerm && (
+          
+          {showProductDropdown && (
             <div className="shopping-list-form__dropdown">
-              {getFilteredProducts().slice(0, 10).map((p, idx) => (
-                <div
-                  key={p.id}
-                  className="shopping-list-form__dropdown-item"
-                  onClick={() => handleAddProduct(p)}
-                >
-                  {p.name} ({p.unit})
+              {getFilteredProducts().length === 0 ? (
+                <div className="shopping-list-form__dropdown-item shopping-list-form__dropdown-item--empty">
+                  Brak produktów
                 </div>
-              ))}
-              {getFilteredProducts().length === 0 && productSearchTerm && (
-                <div 
-                  className="shopping-list-form__dropdown-item shopping-list-form__dropdown-item--create"
+              ) : (
+                getFilteredProducts().map((product, idx) => (
+                  <div
+                    key={product.id}
+                    className={`shopping-list-form__dropdown-item ${
+                      idx === highlightedProductIndex ? "shopping-list-form__dropdown-item--highlighted" : ""
+                    }`}
+                    onMouseEnter={() => setHighlightedProductIndex(idx)}
+                    onClick={() => handleAddProduct(product)}
+                  >
+                    {product.name} ({product.unit})
+                  </div>
+                ))
+              )}
+              {productSearchTerm.trim() !== "" && (
+                <div
+                  className={`shopping-list-form__dropdown-item shopping-list-form__dropdown-item--create ${
+                    highlightedProductIndex === getFilteredProducts().length
+                      ? "shopping-list-form__dropdown-item--highlighted"
+                      : ""
+                  }`}
+                  style={{ borderTop: "1px solid #e5e7eb", color: "#3b82f6", fontWeight: "600" }}
+                  onMouseEnter={() => setHighlightedProductIndex(getFilteredProducts().length)}
                   onClick={() => handleCreateNewProduct(productSearchTerm)}
                 >
-                  {isCreatingProduct ? "Tworzenie..." : `+ Dodaj nowy produkt: "${productSearchTerm}"`}
+                  ➕ Utwórz nowy produkt: {productSearchTerm}
                 </div>
               )}
             </div>
+          )}
+          {showProductDropdown && (
+            <div className="shopping-list-form__dropdown-overlay" onClick={() => setShowProductDropdown(false)} />
           )}
         </div>
 
@@ -258,5 +310,18 @@ export const ShoppingListForm = ({ shoppingList, onSubmit, onCancel, onSuccess, 
         </button>
       </div>
     </form>
+    {showQuickProductModal && (
+      <div className="shopping-list-form__modal-overlay" onClick={() => setShowQuickProductModal(false)}>
+        <div className="shopping-list-form__modal-content" onClick={(e) => e.stopPropagation()}>
+          <ProductForm
+            product={{ name: quickProductName }}
+            onSubmit={handleQuickProductSubmit}
+            onCancel={() => setShowQuickProductModal(false)}
+            isLoading={isLoading}
+          />
+        </div>
+      </div>
+    )}
+    </>
   );
 };
