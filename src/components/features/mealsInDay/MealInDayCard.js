@@ -129,17 +129,35 @@ const MealInDayCard = ({ mealInDay, onEdit, onDelete, onCreateShoppingList }) =>
             {meal.productsInMeal.map((item) => {
               const product = item.product || {};
               const weight = item.weight || 0;
+              const totalWeight = weight * factor;
               const unitWeight = product.weight || 0;
+              
               let quantityText = "";
               if (unitWeight > 0) {
-                const qty = (weight * factor) / unitWeight;
+                const qty = totalWeight / unitWeight;
                 const formattedQty = parseFloat(qty.toFixed(2));
                 quantityText = ` (${formattedQty} szt.)`;
               }
+
+              const kcal = ((product.kcalPer100 || 0) * totalWeight) / 100;
+              const proteins = ((product.proteins || 0) * totalWeight) / 100;
+              const carbs = ((product.sugarAndCarb || ((product.sugar || 0) + (product.carbohydrates || 0))) * totalWeight) / 100;
+              const fats = ((product.fat || 0) * totalWeight) / 100;
+              const fiber = ((product.fiber || 0) * totalWeight) / 100;
+
               return (
-                <div key={item.id} className="meal-in-day-card__product">
-                  <span className="meal-in-day-card__product-name">{product.name}</span>
-                  <span className="meal-in-day-card__product-weight">{(weight * factor).toFixed(0)}g{quantityText}</span>
+                <div key={item.id} className="meal-in-day-card__product-container">
+                  <div className="meal-in-day-card__product">
+                    <span className="meal-in-day-card__product-name">{product.name}</span>
+                    <span className="meal-in-day-card__product-weight">{totalWeight.toFixed(0)}g{quantityText}</span>
+                  </div>
+                  <div className="meal-in-day-card__product-macros">
+                    <span className="meal-in-day-card__product-macro">🔥 {kcal.toFixed(0)} kcal</span>
+                    <span className="meal-in-day-card__product-macro">💪 {proteins.toFixed(1)}g</span>
+                    <span className="meal-in-day-card__product-macro">🍞 {carbs.toFixed(1)}g</span>
+                    <span className="meal-in-day-card__product-macro">🥑 {fats.toFixed(1)}g</span>
+                    {fiber > 0 && <span className="meal-in-day-card__product-macro">🌾 {fiber.toFixed(1)}g</span>}
+                  </div>
                 </div>
               );
             })}

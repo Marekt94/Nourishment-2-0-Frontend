@@ -184,6 +184,9 @@
   flex-direction: column;
   gap: 6px;
   padding-left: 24px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08); /* Visual separator between meal header and products */
 }
 
 .meal-in-day-card__product {
@@ -201,6 +204,34 @@
 .meal-in-day-card__product-weight {
   font-weight: 600;
   color: #999;
+}
+
+.meal-in-day-card__product-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.meal-in-day-card__product-container:last-child {
+  border-bottom: none;
+}
+
+.meal-in-day-card__product-macros {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.meal-in-day-card__product-macro {
+  font-size: 10px;
+  color: #777;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .meal-in-day-card__recipe {
