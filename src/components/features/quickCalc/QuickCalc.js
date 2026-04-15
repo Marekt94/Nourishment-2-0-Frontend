@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { useProducts } from "../../../hooks/useProducts";
 import { useProductsInMeal } from "../../../hooks/useProductsInMeal";
 import { ProductForm } from "../products/ProductForm";
@@ -12,6 +12,15 @@ import "./QuickCalc.css";
  */
 export const QuickCalc = () => {
   const { products, isLoading: productsLoading } = useProducts();
+  const isInitialFocus = useRef(true);
+  const searchInputRef = useRef(null);
+
+  // Focus search input after products load
+  useEffect(() => {
+    if (!productsLoading && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [productsLoading]);
 
   const {
     productsInMeal,
@@ -97,10 +106,16 @@ export const QuickCalc = () => {
                 setShowProductDropdown(true);
               }}
               onClick={() => setShowProductDropdown(true)}
-              onFocus={() => setShowProductDropdown(true)}
+              onFocus={() => {
+                if (isInitialFocus.current) {
+                  isInitialFocus.current = false;
+                  return;
+                }
+                setShowProductDropdown(true);
+              }}
               onKeyDown={handleSearchKeyDown}
               disabled={productsLoading}
-              autoFocus
+              ref={searchInputRef}
             />
 
             {showProductDropdown && (
