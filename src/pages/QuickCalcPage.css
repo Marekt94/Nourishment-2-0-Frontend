@@ -1,0 +1,58 @@
+/* QuickCalcPage.css */
+
+.quick-calc-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.quick-calc-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 24px;
+}
+
+.quick-calc-page__title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quick-calc-page__container {
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: quick-calc-page-fade-in 0.3s ease-in;
+}
+
+@keyframes quick-calc-page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .quick-calc-page {
+    padding: 16px;
+  }
+
+  .quick-calc-page__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .quick-calc-page__title {
+    font-size: 24px;
+  }
+}

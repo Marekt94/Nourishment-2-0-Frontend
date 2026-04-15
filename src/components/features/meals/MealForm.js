@@ -1,24 +1,39 @@
 import React, { useState, useEffect } from "react";
 import { useProducts } from "../../../hooks/useProducts";
+import { useProductsInMeal } from "../../../hooks/useProductsInMeal";
 import { ProductForm } from "../products/ProductForm";
 import "./MealForm.css";
 
 export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
   const { products, isLoading: productsLoading } = useProducts();
 
+  const {
+    productsInMeal,
+    productSearchTerm,
+    showProductDropdown,
+    highlightedProductIndex,
+    showQuickProductModal,
+    quickProductName,
+    setProductSearchTerm,
+    setShowProductDropdown,
+    setHighlightedProductIndex,
+    setShowQuickProductModal,
+    initializeProducts,
+    addProduct,
+    removeProduct,
+    changeProductWeight,
+    changeProductQuantity,
+    handleSearchKeyDown,
+    handleQuickProductSubmit,
+    getFilteredProducts,
+    calculateTotalMacros,
+  } = useProductsInMeal(products);
+
   const [formData, setFormData] = useState({
     id: null,
     name: "",
     recipe: "",
   });
-
-  const [productsInMeal, setProductsInMeal] = useState([]);
-  const [productSearchTerm, setProductSearchTerm] = useState("");
-  const [showProductDropdown, setShowProductDropdown] = useState(false);
-  const [highlightedProductIndex, setHighlightedProductIndex] = useState(0);
-
-  const [showQuickProductModal, setShowQuickProductModal] = useState(false);
-  const [quickProductName, setQuickProductName] = useState("");
 
   // Populate form when editing
   useEffect(() => {
@@ -28,33 +43,16 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
         name: meal.name || "",
         recipe: meal.recipe || "",
       });
-
-      if (meal.productsInMeal) {
-        setProductsInMeal(
-          meal.productsInMeal.map((pim) => {
-            const unitWeight = pim.product?.weight > 0 ? pim.product.weight : 0;
-            const weight = pim.weight || 100;
-            const quantity = unitWeight > 0 ? +(weight / unitWeight).toFixed(3) : "";
-
-            return {
-              id: pim.id || null,
-              tempId: pim.id ? String(pim.id) : String(Date.now() + Math.random()),
-              product: pim.product,
-              weight: weight,
-              quantity: quantity,
-            };
-          })
-        );
-      }
+      initializeProducts(meal.productsInMeal);
     } else {
       setFormData({
         id: null,
         name: "",
         recipe: "",
       });
-      setProductsInMeal([]);
+      initializeProducts(null);
     }
-  }, [meal]);
+  }, [meal, initializeProducts]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -62,143 +60,6 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
       ...prev,
       [name]: value,
     }));
-  };
-
-  const getFilteredProducts = () => {
-    const searchTerm = productSearchTerm.toLowerCase();
-    const availableProducts = products.filter(
-      (p) => !productsInMeal.some((pim) => pim.product.id === p.id)
-    );
-    if (!searchTerm) return availableProducts;
-    return availableProducts.filter((product) => product.name?.toLowerCase().includes(searchTerm));
-  };
-
-  const handleAddProduct = (productId) => {
-    const product = products.find((p) => p.id === productId);
-    if (product) {
-      const initialWeight = 100;
-      const unitWeight = product.weight > 0 ? product.weight : 0;
-      const initialQuantity = unitWeight > 0 ? +(initialWeight / unitWeight).toFixed(3) : "";
-
-      setProductsInMeal((prev) => [
-        {
-          id: null,
-          tempId: String(Date.now() + Math.random()),
-          product: product,
-          weight: initialWeight,
-          quantity: initialQuantity,
-        },
-        ...prev,
-      ]);
-      setProductSearchTerm("");
-      setHighlightedProductIndex(0);
-      // We keep the dropdown open or allow it to be easily reopened
-      setShowProductDropdown(true);
-    }
-  };
-
-  const handleProductSearchKeyDown = (e) => {
-    const filtered = getFilteredProducts();
-    const hasAddOption = productSearchTerm.trim() !== "";
-    const totalOptions = filtered.length + (hasAddOption ? 1 : 0);
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlightedProductIndex((prev) => Math.min(prev + 1, totalOptions - 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlightedProductIndex((prev) => Math.max(prev - 1, 0));
-    } else if (e.key === "Tab") {
-      if (hasAddOption) {
-        e.preventDefault();
-        setHighlightedProductIndex(filtered.length);
-      }
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (highlightedProductIndex < filtered.length) {
-        if (filtered[highlightedProductIndex]) {
-          handleAddProduct(filtered[highlightedProductIndex].id);
-        }
-      } else if (hasAddOption && highlightedProductIndex === filtered.length) {
-        setQuickProductName(productSearchTerm);
-        setShowProductDropdown(false);
-        setShowQuickProductModal(true);
-      }
-    } else if (e.key === "Escape") {
-      setShowProductDropdown(false);
-    }
-  };
-
-  const handleQuickProductSubmit = (newProductData) => {
-    const initialWeight = 100;
-    const unitWeight = newProductData.weight > 0 ? newProductData.weight : 0;
-    const initialQuantity = unitWeight > 0 ? +(initialWeight / unitWeight).toFixed(3) : "";
-
-    setProductsInMeal((prev) => [
-      {
-        id: null,
-        tempId: String(Date.now() + Math.random()),
-        product: newProductData,
-        weight: initialWeight,
-        quantity: initialQuantity,
-      },
-      ...prev,
-    ]);
-    setShowQuickProductModal(false);
-    setProductSearchTerm("");
-  };
-
-  const handleRemoveProduct = (tempId) => {
-    setProductsInMeal((prev) => prev.filter((p) => p.tempId !== tempId));
-  };
-
-  const handleProductWeightChange = (tempId, weightStr) => {
-    setProductsInMeal((prev) =>
-      prev.map((p) => {
-        if (p.tempId === tempId) {
-          const numWeight = parseFloat(weightStr);
-          if (isNaN(numWeight)) return { ...p, weight: weightStr, quantity: "" };
-          
-          const unitWeight = p.product.weight > 0 ? p.product.weight : 0;
-          const quantity = unitWeight > 0 ? numWeight / unitWeight : 0;
-          return { ...p, weight: weightStr, quantity: quantity !== 0 ? +quantity.toFixed(3) : "" };
-        }
-        return p;
-      })
-    );
-  };
-
-  const handleProductQuantityChange = (tempId, quantityStr) => {
-    setProductsInMeal((prev) =>
-      prev.map((p) => {
-        if (p.tempId === tempId) {
-          const numQuantity = parseFloat(quantityStr);
-          if (isNaN(numQuantity)) return { ...p, quantity: quantityStr, weight: "" };
-
-          const unitWeight = p.product.weight > 0 ? p.product.weight : 0;
-          const weight = numQuantity * unitWeight;
-          return { ...p, quantity: quantityStr, weight: weight !== 0 ? Math.round(weight) : "" };
-        }
-        return p;
-      })
-    );
-  };
-
-  const calculateTotalMacros = () => {
-    return productsInMeal.reduce(
-      (totals, item) => {
-        const factor = (parseFloat(item.weight) || 0) / 100;
-        const p = item.product || {};
-        return {
-          calories: totals.calories + (p.kcalPer100 || 0) * factor,
-          proteins: totals.proteins + (p.proteins || 0) * factor,
-          carbs: totals.carbs + (p.sugarAndCarb || ((p.sugar || 0) + (p.carbohydrates || 0))) * factor,
-          fats: totals.fats + (p.fat || 0) * factor,
-          fiber: totals.fiber + (p.fiber || 0) * factor,
-        };
-      },
-      { calories: 0, proteins: 0, carbs: 0, fats: 0, fiber: 0 }
-    );
   };
 
   const handleSubmit = (e) => {
@@ -261,7 +122,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
             }}
             onClick={() => setShowProductDropdown(true)}
             onFocus={() => setShowProductDropdown(true)}
-            onKeyDown={handleProductSearchKeyDown}
+            onKeyDown={handleSearchKeyDown}
             disabled={isLoading || productsLoading}
           />
           
@@ -285,7 +146,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
                           idx === highlightedProductIndex ? "meal-form__dropdown-item--highlighted" : ""
                         }`}
                         onMouseEnter={() => setHighlightedProductIndex(idx)}
-                        onClick={() => handleAddProduct(product.id)}
+                        onClick={() => addProduct(product.id)}
                       >
                         {product.name}
                       </div>
@@ -301,7 +162,6 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
                       style={{ borderTop: "1px solid #e5e7eb", color: "#3b82f6", fontWeight: "600" }}
                       onMouseEnter={() => setHighlightedProductIndex(getFilteredProducts().length)}
                       onClick={() => {
-                        setQuickProductName(productSearchTerm);
                         setShowProductDropdown(false);
                         setShowQuickProductModal(true);
                       }}
@@ -341,7 +201,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
                       step="0.1"
                       className="meal-form__product-weight"
                       value={item.weight}
-                      onChange={(e) => handleProductWeightChange(item.tempId, e.target.value)}
+                      onChange={(e) => changeProductWeight(item.tempId, e.target.value)}
                       disabled={isLoading}
                     />
                     <span className="meal-form__product-unit">g</span>
@@ -354,7 +214,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
                         step="0.001"
                         className="meal-form__product-weight"
                         value={item.quantity}
-                        onChange={(e) => handleProductQuantityChange(item.tempId, e.target.value)}
+                        onChange={(e) => changeProductQuantity(item.tempId, e.target.value)}
                         disabled={isLoading}
                       />
                       <span className="meal-form__product-unit">szt.</span>
@@ -363,7 +223,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, isLoading }) => {
                   <button
                     type="button"
                     className="meal-form__product-remove"
-                    onClick={() => handleRemoveProduct(item.tempId)}
+                    onClick={() => removeProduct(item.tempId)}
                     disabled={isLoading}
                   >
                     ✕

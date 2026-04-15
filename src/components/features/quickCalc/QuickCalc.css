@@ -1,0 +1,334 @@
+/* QuickCalc.css — Kalkulator Posiłku */
+
+.quick-calc {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quick-calc__title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.quick-calc__subtitle {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: 1rem;
+}
+
+/* Macros Summary — prominent at top */
+.quick-calc__macros-summary {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 50%, #ecfeff 100%);
+  border: 1px solid #99f6e4;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.quick-calc__macro-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.quick-calc__macro-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #0d9488;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.quick-calc__macro-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.quick-calc__macro-value--zero {
+  color: #9ca3af;
+}
+
+/* Search section */
+.quick-calc__section {
+  margin-bottom: 1.5rem;
+}
+
+.quick-calc__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.quick-calc__product-search {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.quick-calc__search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.quick-calc__search-input:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.quick-calc__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.quick-calc__dropdown-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.quick-calc__dropdown-item:hover,
+.quick-calc__dropdown-item--highlighted {
+  background: #f0fdfa;
+}
+
+.quick-calc__dropdown-item--disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.quick-calc__dropdown-item--disabled:hover {
+  background: white;
+}
+
+.quick-calc__dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+}
+
+/* Products list */
+.quick-calc__products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quick-calc__product-item {
+  display: flex;
+  align-items: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  gap: 1rem;
+  transition: border-color 0.2s;
+}
+
+.quick-calc__product-item:hover {
+  border-color: #99f6e4;
+}
+
+.quick-calc__product-number {
+  font-weight: 700;
+  color: #6b7280;
+  min-width: 1.5rem;
+}
+
+.quick-calc__product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-calc__product-name {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.quick-calc__product-macros {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.quick-calc__product-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quick-calc__product-weight {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  text-align: right;
+  font-size: 1rem;
+}
+
+.quick-calc__product-weight:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.1);
+}
+
+.quick-calc__product-unit {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.quick-calc__product-remove {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.quick-calc__product-remove:hover {
+  background: #fee2e2;
+}
+
+.quick-calc__empty-message {
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.875rem;
+  margin: 0;
+  text-align: center;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #d1d5db;
+}
+
+/* Clear All button */
+.quick-calc__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.quick-calc__clear-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.6rem 1.25rem;
+  background: white;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-calc__clear-button:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+/* Modal specific styles */
+.quick-calc__modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: quick-calc-fadeIn 0.15s ease-out;
+}
+
+.quick-calc__modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: quick-calc-slideIn 0.2s ease-out;
+  padding: 1rem;
+}
+
+@keyframes quick-calc-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes quick-calc-slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .quick-calc__macros-summary {
+    grid-template-columns: repeat(3, 1fr);
+    position: static;
+  }
+
+  .quick-calc__product-item {
+    flex-wrap: wrap;
+  }
+
+  .quick-calc__product-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 420px) {
+  .quick-calc__macros-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quick-calc {
+    padding: 1rem;
+  }
+}
