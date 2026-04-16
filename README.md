@@ -54,4 +54,4 @@ src/
 
 ## Powiązane repozytoria
 
-- [Backend (Go)](../nourishment_20_backend) — REST API i logika biznesowa
+- [Backend (Go)](https://github.com/Marekt94/Nourishment-2-0) — REST API i logika biznesowa
