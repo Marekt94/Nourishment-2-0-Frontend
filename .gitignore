@@ -19,3 +19,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.md
+!README.md
+*.ps1
+/wnioski do promptowania.txt
+/test-login.html
