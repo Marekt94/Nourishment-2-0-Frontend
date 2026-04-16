@@ -1,88 +1,57 @@
-# Nourishment Frontend
+# Nourishment — Frontend
 
-Nowoczesna aplikacja do zarządzania żywieniem zbudowana z React 18+ i JavaScript.
+Aplikacja webowa do zarządzania żywieniem. Umożliwia planowanie posiłków, śledzenie makroskładników i tworzenie list zakupów.
 
-## 🚀 Technologie
+## Funkcjonalności
 
-- React 18+
-- React Router DOM
+- **Produkty** — baza produktów spożywczych z pełnym opisem wartości odżywczych (białko, tłuszcze, węglowodany, błonnik) i kategoriami
+- **Posiłki (przepisy)** — tworzenie przepisów z wybranych produktów, automatyczne obliczanie makroskładników
+- **Dziennik posiłków** — planowanie co jesz danego dnia, podział na porcje, podsumowanie kalorii
+- **Szybki kalkulator** — błyskawiczne przeliczanie makroskładników bez zapisywania posiłku
+- **Lista zakupów** — generowanie list zakupów na podstawie zaplanowanych posiłków
+- **Autoryzacja** — logowanie z tokenem JWT, automatyczne wylogowanie po wygaśnięciu sesji
+
+## Technologie
+
+- React 18
+- React Router 6
 - Axios
-- Plain CSS (BEM methodology)
+- CSS (BEM)
 
-## 📦 Instalacja
+## Uruchomienie
 
 ```bash
+# Instalacja zależności
 npm install
-```
 
-## 🏃 Uruchomienie
-
-```bash
+# Start w trybie deweloperskim (port 3000)
 npm start
 ```
 
-Aplikacja będzie dostępna pod adresem: `http://localhost:3000`
-
-## 🔧 Konfiguracja
-
-Utwórz plik `.env` w głównym katalogu projektu:
+Wymagane zmienne środowiskowe w pliku `.env`:
 
 ```
-REACT_APP_API_BASE_URL=http://localhost:3000/api
+REACT_APP_API_URL=http://localhost:8080
 ```
 
-## 📁 Struktura projektu
+## Struktura projektu
 
 ```
 src/
-├── components/     # Komponenty UI
-├── pages/          # Strony aplikacji
-│   ├── LandingPage.js
-│   ├── LoginPage.js
-│   ├── RegisterPage.js
-│   └── DashboardPage.js
-├── services/       # Serwisy (API, auth)
-│   ├── api.js
-│   └── authService.js
-├── hooks/          # Custom hooks
-├── utils/          # Funkcje pomocnicze
-├── constants/      # Stałe
-└── assets/         # Zasoby statyczne
+├── components/
+│   ├── common/          # Współdzielone komponenty (Toast, Sidebar, SearchBar...)
+│   ├── features/        # Moduły funkcjonalne
+│   │   ├── meals/       # Przepisy
+│   │   ├── mealsInDay/  # Dziennik posiłków
+│   │   ├── products/    # Produkty
+│   │   ├── quickCalc/   # Szybki kalkulator
+│   │   └── shoppingList/# Lista zakupów
+│   └── layout/          # Layouty stron
+├── hooks/               # Custom hooks
+├── pages/               # Widoki stron
+└── services/            # Komunikacja z API
 ```
 
-## 🔐 Autentykacja
+## Powiązane repozytoria
 
-Aplikacja używa JWT tokenów do autentykacji:
-
-- Token przechowywany w localStorage jako `authToken`
-- Header: `Authorization: Bearer <token>`
-- Automatyczne przekierowanie do logowania przy błędzie 401
-
-## 📱 Features
-
-- ✅ Nowoczesna Landing Page
-- ✅ Strona logowania z walidacją
-- ✅ Protected routes
-- ✅ JWT Authentication
-- ✅ Responsive design
-- ⏳ Dashboard (w budowie)
-- ⏳ Zarządzanie posiłkami (w budowie)
-
-## 🎨 Design
-
-Aplikacja używa:
-
-- Gradient backgrounds
-- Glassmorphism effects
-- Smooth animations
-- Modern shadows
-- BEM CSS methodology
-
-## 🔗 Backend
-
-Backend repository: https://github.com/Marekt94/Nourishment-2-0.git
-Local path: `/c:/Repo/nourishment_20/`
-
-## 📄 License
-
-MIT
+- [Backend (Go)](../nourishment_20_backend) — REST API i logika biznesowa
